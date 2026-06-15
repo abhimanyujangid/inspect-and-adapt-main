@@ -6,14 +6,13 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { AlarmPage } from "./pages/AlarmPage";
 import { PlcConfigPage } from "./pages/PlcConfigPage";
 import { CameraConfigPage } from "./pages/CameraConfigPage";
-import { DeviceControlPage } from "./pages/DeviceControlPage";
-import { DatasetsPage } from "./pages/DatasetsPage";
 import { ImageCapturePage } from "./pages/ImageCapturePage";
 import { GalleryPage } from "./pages/GalleryPage";
 import { ModelTrainingPage } from "./pages/ModelTrainingPage";
 import { ModelManagerPage } from "./pages/ModelManagerPage";
 import { NewProfileWizard } from "./NewProfileWizard";
 import { ManageProfilesDrawer } from "./ManageProfilesDrawer";
+import { SEED_MODELS, type TrainedModel } from "./TrainedModelsPanel";
 
 export type Profile = {
   id: string;
@@ -34,6 +33,7 @@ const SEED_PROFILES: Profile[] = [
 export function VisionApp() {
   const [page, setPage] = useState<PageKey>("dashboard");
   const [profiles, setProfiles] = useState<Profile[]>(SEED_PROFILES);
+  const [models, setModels] = useState<TrainedModel[]>(SEED_MODELS);
   const [activeProfileId, setActiveProfileId] = useState("p2");
   const [wizardOpen, setWizardOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
@@ -47,12 +47,19 @@ export function VisionApp() {
       case "alarm": return <AlarmPage />;
       case "plc": return <PlcConfigPage />;
       case "camera": return <CameraConfigPage />;
-      case "device": return <DeviceControlPage />;
-      case "datasets": return <DatasetsPage />;
       case "capture": return <ImageCapturePage />;
       case "gallery": return <GalleryPage />;
       case "training": return <ModelTrainingPage />;
-      case "models": return <ModelManagerPage />;
+      case "models": return (
+        <ModelManagerPage
+          models={models}
+          onSaveThreshold={(id, threshold) =>
+            setModels((prev) =>
+              prev.map((m) => (m.id === id ? { ...m, threshold } : m)),
+            )
+          }
+        />
+      );
     }
   };
 
@@ -69,7 +76,7 @@ export function VisionApp() {
       />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar current={page} onNavigate={setPage} />
-        <main className={cn("flex-1", page === "camera" || page === "plc" ? "overflow-hidden" : "overflow-auto")}>
+        <main className={cn("flex-1", page === "camera" || page === "plc" || page === "models" ? "overflow-hidden" : "overflow-auto")}>
           {renderPage()}
         </main>
       </div>
@@ -77,8 +84,22 @@ export function VisionApp() {
       {wizardOpen && (
         <NewProfileWizard
           onClose={() => setWizardOpen(false)}
+          models={models}
           onCreate={(p) => {
             setProfiles((prev) => [...prev, p]);
+            setModels((prev) => [
+              ...prev,
+              {
+                id: `m${Date.now()}`,
+                name: `${p.name} Model`,
+                subtitle: "No IP set",
+                dataset: p.name.toLowerCase().replace(/\s+/g, "_"),
+                capType: p.name,
+                images: "127",
+                backbone: "PatchCore",
+                threshold: "0.56",
+              },
+            ]);
             setActiveProfileId(p.id);
             setWizardOpen(false);
           }}

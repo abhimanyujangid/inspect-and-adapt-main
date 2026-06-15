@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Field, Input, Select, Btn } from "../ui";
-import { Save, Upload, RotateCcw, Crop } from "lucide-react";
+import { Save, Upload, Crop } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const CAMERAS = ["Basler acA1300-60gc", "Basler acA2440-35um", "FLIR BFS-PGE-50S5M"];
@@ -111,9 +111,8 @@ export function CameraConfigPage() {
               </div>
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <Btn><Save className="h-3.5 w-3.5" /> Save Settings</Btn>
-              <Btn><Upload className="h-3.5 w-3.5" /> Load Image</Btn>
-              <Btn variant="outline"><RotateCcw className="h-3.5 w-3.5" /> Reset Settings</Btn>
+              <LoadImageBtn />
+              <TriggerCameraBtn />
             </div>
           </ConfigCard>
 
@@ -136,7 +135,8 @@ export function CameraConfigPage() {
             <div className="mt-4 rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
               Area: {roiStats.area.toLocaleString()} PX² — Center: ({roiStats.cx}, {roiStats.cy})
             </div>
-            <div className="mt-4 flex justify-end">
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+              <LoadImageBtn />
               <Btn><Crop className="h-3.5 w-3.5" /> Apply ROI</Btn>
             </div>
           </ConfigCard>
@@ -191,14 +191,34 @@ export function CameraConfigPage() {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <Btn variant="success"><Upload className="h-3.5 w-3.5" /> Load Image</Btn>
-              <Btn variant="danger">Trigger Camera</Btn>
+              <LoadImageBtn />
+              <TriggerCameraBtn />
             </div>
           </ConfigCard>
+
+          <div className="flex justify-end">
+            <Btn>
+              <Save className="h-3.5 w-3.5" />
+              Save Settings
+            </Btn>
+          </div>
         </div>
       </div>
     </div>
   );
+}
+
+function LoadImageBtn() {
+  return (
+    <Btn variant="success">
+      <Upload className="h-3.5 w-3.5" />
+      Load Image
+    </Btn>
+  );
+}
+
+function TriggerCameraBtn() {
+  return <Btn variant="danger">Trigger Camera</Btn>;
 }
 
 function ConfigCard({

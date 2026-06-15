@@ -1,13 +1,13 @@
 import {
-  LayoutDashboard, AlertTriangle, Cable, Camera, SlidersHorizontal,
-  Database, Aperture, Images, Brain, Boxes,
+  LayoutDashboard, AlertTriangle, Cable, Camera,
+  Aperture, Images, Brain, Boxes,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type PageKey =
   | "dashboard" | "alarm"
-  | "plc" | "camera" | "device"
-  | "datasets" | "capture" | "gallery" | "training" | "models";
+  | "plc" | "camera"
+  | "capture" | "gallery" | "training" | "models";
 
 type Group = {
   label: string;
@@ -27,13 +27,11 @@ const GROUPS: Group[] = [
     items: [
       { key: "plc", label: "PLC Configuration", icon: Cable },
       { key: "camera", label: "Camera Configuration", icon: Camera },
-      { key: "device", label: "Device Control", icon: SlidersHorizontal },
     ],
   },
   {
     label: "Training",
     items: [
-      { key: "datasets", label: "Datasets", icon: Database },
       { key: "capture", label: "Image Capture", icon: Aperture },
       { key: "gallery", label: "Gallery", icon: Images },
       { key: "training", label: "Model Training", icon: Brain },

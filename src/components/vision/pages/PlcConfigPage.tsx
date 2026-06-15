@@ -7,9 +7,6 @@ type PlcConfig = {
   id: string;
   name: string;
   ip: string;
-  cameraSerial: string;
-  exposure: string;
-  gain: string;
   rack: string;
   slot: string;
   dbNumber: string;
@@ -31,9 +28,6 @@ const SEED_CONFIGS: PlcConfig[] = [
     id: "new",
     name: "New Config",
     ip: "",
-    cameraSerial: "",
-    exposure: "",
-    gain: "",
     rack: "0",
     slot: "1",
     dbNumber: "100",
@@ -53,9 +47,6 @@ const SEED_CONFIGS: PlcConfig[] = [
     id: "floor-a",
     name: "Factory Floor A",
     ip: "192.168.0.10",
-    cameraSerial: "23194851",
-    exposure: "2400",
-    gain: "4.0",
     rack: "0",
     slot: "1",
     dbNumber: "100",
@@ -75,9 +66,6 @@ const SEED_CONFIGS: PlcConfig[] = [
     id: "floor-b",
     name: "Factory Floor B",
     ip: "192.168.0.11",
-    cameraSerial: "23194852",
-    exposure: "2200",
-    gain: "3.5",
     rack: "0",
     slot: "1",
     dbNumber: "101",
@@ -97,9 +85,6 @@ const SEED_CONFIGS: PlcConfig[] = [
     id: "highspeed",
     name: "Highspeed Line 2",
     ip: "10.0.0.50",
-    cameraSerial: "40192810",
-    exposure: "1800",
-    gain: "6.0",
     rack: "0",
     slot: "2",
     dbNumber: "200",
@@ -147,9 +132,6 @@ export function PlcConfigPage() {
       id,
       name: "New Config",
       ip: "",
-      cameraSerial: "",
-      exposure: "",
-      gain: "",
     };
     setConfigs((prev) => [newConfig, ...prev]);
     setSelectedId(id);
@@ -161,14 +143,10 @@ export function PlcConfigPage() {
         title="PLC Configuration"
         subtitle="Connection settings — saved to user config"
         actions={
-          <>
-            <Btn variant="outline">Import</Btn>
-            <Btn variant="outline">Export</Btn>
-            <Btn onClick={addConfig}>
-              <Plus className="h-3.5 w-3.5" />
-              New Config
-            </Btn>
-          </>
+          <Btn onClick={addConfig}>
+            <Plus className="h-3.5 w-3.5" />
+            New Config
+          </Btn>
         }
       />
 
@@ -207,39 +185,12 @@ export function PlcConfigPage() {
         {/* Details — scrollable */}
         <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6">
           <ConfigSection title="Edit Configuration">
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Config Name">
-                <Input
-                  value={selected.name}
-                  onChange={(e) => updateField("name", e.target.value)}
-                />
-              </Field>
-              <Field label="Camera Serial">
-                <Input
-                  value={selected.cameraSerial}
-                  onChange={(e) => updateField("cameraSerial", e.target.value)}
-                />
-              </Field>
-              <Field label="Exposure (us)">
-                <Input
-                  type="number"
-                  value={selected.exposure}
-                  onChange={(e) => updateField("exposure", e.target.value)}
-                />
-              </Field>
-              <Field label="Gain">
-                <Input
-                  value={selected.gain}
-                  onChange={(e) => updateField("gain", e.target.value)}
-                />
-              </Field>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <Btn>
-                <Save className="h-3.5 w-3.5" />
-                Save Settings
-              </Btn>
-            </div>
+            <Field label="Config Name">
+              <Input
+                value={selected.name}
+                onChange={(e) => updateField("name", e.target.value)}
+              />
+            </Field>
           </ConfigSection>
 
           <ConfigSection title="Connection">
@@ -362,6 +313,13 @@ export function PlcConfigPage() {
               </Btn>
             </div>
           </ConfigSection>
+
+          <div className="flex justify-end">
+            <Btn>
+              <Save className="h-3.5 w-3.5" />
+              Save Settings
+            </Btn>
+          </div>
         </div>
       </div>
     </div>

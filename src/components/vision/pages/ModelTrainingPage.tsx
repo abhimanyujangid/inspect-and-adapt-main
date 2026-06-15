@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Save } from "lucide-react";
+import { PageHeader } from "../ui";
 
 export function ModelTrainingPage() {
   const [label, setLabel] = useState("Test Model");
@@ -12,13 +13,14 @@ export function ModelTrainingPage() {
   ];
 
   return (
-    <div className="px-8 py-6">
-      <h1 className="text-2xl font-bold tracking-tight text-foreground">Model Training</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Configure and monitor training jobs — settings saved on start
-      </p>
+    <>
+      <PageHeader
+        title="Model Training"
+        subtitle="Configure and monitor training jobs — settings saved on start"
+      />
 
-      <div className="mt-6 grid grid-cols-2 gap-8">
+      <div className="p-6">
+      <div className="grid grid-cols-2 gap-8">
         {/* Training Configuration */}
         <section>
           <h2 className="text-base font-semibold text-foreground">Training Configuration</h2>
@@ -93,7 +95,8 @@ export function ModelTrainingPage() {
           </div>
         </section>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

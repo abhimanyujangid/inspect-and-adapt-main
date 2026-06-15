@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
+import { PageHeader } from "../ui";
 import { cn } from "@/lib/utils";
 
 const IMAGES = Array.from({ length: 15 }, (_, i) => `Cap_0${127 + i}.png`);
@@ -17,11 +18,14 @@ export function GalleryPage() {
   };
 
   return (
-    <div className="px-8 py-6">
-      <h1 className="text-2xl font-bold tracking-tight text-foreground">Gallery</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Training image browser — backend pending</p>
+    <>
+      <PageHeader
+        title="Gallery"
+        subtitle="Training image browser — backend pending"
+      />
 
-      <div className="mt-6 flex items-end gap-6">
+      <div className="p-6">
+      <div className="flex items-end gap-6">
         <label className="flex flex-col gap-2">
           <span className="text-sm font-semibold text-foreground">Select Dataset</span>
           <div className="relative">
@@ -89,6 +93,7 @@ export function GalleryPage() {
           );
         })}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
