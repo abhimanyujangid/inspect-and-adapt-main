@@ -1,15 +1,36 @@
-import { X, Edit, Copy, Download, Trash2, Check } from "lucide-react";
-import type { Profile } from "./VisionApp";
+import { useState } from "react";
+import { X, Edit, Trash2, Check } from "lucide-react";
+import type { Profile } from "@/lib/vision-storage";
 import { Btn } from "./ui";
+import { ConfirmModal } from "./ConfirmModal";
 import { cn } from "@/lib/utils";
 
 export function ManageProfilesDrawer({
-  open, onClose, profiles, activeProfileId, onActivate, onDelete,
+  open,
+  onClose,
+  profiles,
+  activeProfileId,
+  onActivate,
+  onEdit,
+  onDelete,
 }: {
-  open: boolean; onClose: () => void;
-  profiles: Profile[]; activeProfileId: string;
-  onActivate: (id: string) => void; onDelete: (id: string) => void;
+  open: boolean;
+  onClose: () => void;
+  profiles: Profile[];
+  activeProfileId: string;
+  onActivate: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const confirmDelete = () => {
+    if (deleteId) {
+      onDelete(deleteId);
+      setDeleteId(null);
+    }
+  };
+
   return (
     <>
       <div
@@ -40,45 +61,54 @@ export function ManageProfilesDrawer({
             <thead className="text-[10px] uppercase tracking-wider text-muted-foreground">
               <tr className="border-b border-border">
                 <th className="py-2 text-left font-semibold">Profile</th>
-                <th className="py-2 text-left font-semibold">Product</th>
                 <th className="py-2 text-left font-semibold">Status</th>
-                <th className="py-2 text-right font-semibold">Modified</th>
+                <th className="py-2 text-right font-semibold">Created</th>
                 <th className="py-2 text-right font-semibold"></th>
               </tr>
             </thead>
             <tbody>
               {profiles.map((p) => {
-                const active = p.id === activeProfileId;
+                const isActive = p.id === activeProfileId;
                 const statusTone = {
-                  Ready: "text-success", Training: "text-primary",
-                  Incomplete: "text-warning", Error: "text-destructive",
+                  active: "text-success",
+                  pending: "text-warning",
+                  inactive: "text-muted-foreground",
                 }[p.status];
                 return (
-                  <tr key={p.id} className={cn("border-b border-border/50 hover:bg-surface", active && "bg-primary/5")}>
+                  <tr key={p.id} className={cn("border-b border-border/50 hover:bg-surface", isActive && "bg-primary/5")}>
                     <td className="py-3">
                       <div className="flex items-center gap-2">
-                        {active && <Check className="h-3.5 w-3.5 text-primary" />}
+                        {isActive && <Check className="h-3.5 w-3.5 text-primary" />}
                         <div>
-                          <div className="font-medium">{p.name}</div>
-                          <div className="text-[11px] text-muted-foreground font-mono-tabular">created {p.created}</div>
+                          <div className="font-medium">{p.capName}</div>
+                          <div className="text-[11px] text-muted-foreground font-mono-tabular">
+                            {p.id.slice(0, 20)}…
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 text-xs">{p.product}</td>
                     <td className="py-3">
                       <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
-                        <span className={cn("led", statusTone)} />
+                        <span className={cn("h-2 w-2 rounded-full bg-current", statusTone)} />
                         {p.status}
                       </span>
                     </td>
-                    <td className="py-3 text-right text-xs font-mono-tabular text-muted-foreground">{p.modified}</td>
+                    <td className="py-3 text-right text-xs font-mono-tabular text-muted-foreground">
+                      {p.createdAt.slice(0, 10)}
+                    </td>
                     <td className="py-3 text-right">
                       <div className="flex justify-end gap-1">
-                        {!active && <Btn variant="outline" className="h-7 px-2" onClick={() => onActivate(p.id)}>Activate</Btn>}
-                        <IconBtn title="Edit"><Edit className="h-3.5 w-3.5" /></IconBtn>
-                        <IconBtn title="Duplicate"><Copy className="h-3.5 w-3.5" /></IconBtn>
-                        <IconBtn title="Export"><Download className="h-3.5 w-3.5" /></IconBtn>
-                        <IconBtn title="Delete" danger onClick={() => onDelete(p.id)}><Trash2 className="h-3.5 w-3.5" /></IconBtn>
+                        {!isActive && (
+                          <Btn variant="outline" className="h-7 px-2" onClick={() => onActivate(p.id)}>
+                            Activate
+                          </Btn>
+                        )}
+                        <IconBtn title="Edit" onClick={() => onEdit(p.id)}>
+                          <Edit className="h-3.5 w-3.5" />
+                        </IconBtn>
+                        <IconBtn title="Delete" danger onClick={() => setDeleteId(p.id)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </IconBtn>
                       </div>
                     </td>
                   </tr>
@@ -86,19 +116,34 @@ export function ManageProfilesDrawer({
               })}
             </tbody>
           </table>
+          {profiles.length === 0 && (
+            <p className="py-8 text-center text-sm text-muted-foreground">No profiles yet. Create one with + New Profile.</p>
+          )}
         </div>
 
         <footer className="flex h-14 shrink-0 items-center justify-between border-t border-border px-4 text-xs text-muted-foreground">
-          <span>Edit a profile by activating it, then use the sidebar pages.</span>
+          <span>Use Edit to reopen the profile wizard. Activate to switch the active profile.</span>
           <Btn variant="outline" onClick={onClose}>Close</Btn>
         </footer>
       </aside>
+
+      <ConfirmModal
+        open={deleteId !== null}
+        title="Delete Profile"
+        message="Are you sure you want to delete this profile? All associated data will be removed."
+        confirmLabel="Delete"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </>
   );
 }
 
 function IconBtn({
-  children, danger, ...rest
+  children,
+  danger,
+  ...rest
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { danger?: boolean }) {
   return (
     <button

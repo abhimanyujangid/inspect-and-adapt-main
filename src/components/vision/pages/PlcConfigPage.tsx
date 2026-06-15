@@ -1,141 +1,69 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageHeader, Field, Input, Btn } from "../ui";
 import { Plus, Save, Plug, Unplug } from "lucide-react";
+import {
+  createEmptyPlcConfig,
+  type PlcConfiguration,
+  type ProfilePageProps,
+} from "@/lib/vision-storage";
 import { cn } from "@/lib/utils";
 
-type PlcConfig = {
-  id: string;
-  name: string;
-  ip: string;
-  rack: string;
-  slot: string;
-  dbNumber: string;
-  params: {
-    encoderPpr: string;
-    pulsesPerCap: string;
-    triggerPulseMs: string;
-    lightTriggerMs: string;
-    resultWaitMs: string;
-    triggerDelayMs: string;
-    triggerDelayCount: string;
-    sovOnTimeMs: string;
-    rejectDelayCount: string;
-  };
-};
-
-const SEED_CONFIGS: PlcConfig[] = [
-  {
-    id: "new",
-    name: "New Config",
-    ip: "",
-    rack: "0",
-    slot: "1",
-    dbNumber: "100",
-    params: {
-      encoderPpr: "1024",
-      pulsesPerCap: "8",
-      triggerPulseMs: "5",
-      lightTriggerMs: "10",
-      resultWaitMs: "50",
-      triggerDelayMs: "0",
-      triggerDelayCount: "0",
-      sovOnTimeMs: "80",
-      rejectDelayCount: "3",
-    },
-  },
-  {
-    id: "floor-a",
-    name: "Factory Floor A",
-    ip: "192.168.0.10",
-    rack: "0",
-    slot: "1",
-    dbNumber: "100",
-    params: {
-      encoderPpr: "1024",
-      pulsesPerCap: "8",
-      triggerPulseMs: "5",
-      lightTriggerMs: "10",
-      resultWaitMs: "50",
-      triggerDelayMs: "0",
-      triggerDelayCount: "0",
-      sovOnTimeMs: "80",
-      rejectDelayCount: "3",
-    },
-  },
-  {
-    id: "floor-b",
-    name: "Factory Floor B",
-    ip: "192.168.0.11",
-    rack: "0",
-    slot: "1",
-    dbNumber: "101",
-    params: {
-      encoderPpr: "2048",
-      pulsesPerCap: "10",
-      triggerPulseMs: "4",
-      lightTriggerMs: "8",
-      resultWaitMs: "45",
-      triggerDelayMs: "2",
-      triggerDelayCount: "1",
-      sovOnTimeMs: "75",
-      rejectDelayCount: "4",
-    },
-  },
-  {
-    id: "highspeed",
-    name: "Highspeed Line 2",
-    ip: "10.0.0.50",
-    rack: "0",
-    slot: "2",
-    dbNumber: "200",
-    params: {
-      encoderPpr: "4096",
-      pulsesPerCap: "12",
-      triggerPulseMs: "3",
-      lightTriggerMs: "6",
-      resultWaitMs: "30",
-      triggerDelayMs: "1",
-      triggerDelayCount: "2",
-      sovOnTimeMs: "60",
-      rejectDelayCount: "2",
-    },
-  },
-];
-
-export function PlcConfigPage() {
-  const [configs, setConfigs] = useState<PlcConfig[]>(SEED_CONFIGS);
-  const [selectedId, setSelectedId] = useState("new");
+export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps) {
+  const [draft, setDraft] = useState<PlcConfiguration>(createEmptyPlcConfig());
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
+  const [isNew, setIsNew] = useState(true);
 
-  const selected = configs.find((c) => c.id === selectedId) ?? configs[0];
+  const configs = profile.plcConfigurations;
 
-  const updateField = <K extends keyof PlcConfig>(key: K, value: PlcConfig[K]) => {
-    setConfigs((prev) =>
-      prev.map((c) => (c.id === selectedId ? { ...c, [key]: value } : c)),
-    );
+  useEffect(() => {
+    if (configs.length > 0 && !selectedId && !isNew) {
+      selectConfig(configs[0]);
+    }
+  }, [configs.length]);
+
+  const selectConfig = (config: PlcConfiguration) => {
+    setDraft({ ...config, params: { ...config.params } });
+    setSelectedId(config.id);
+    setIsNew(false);
+    setConnected(false);
   };
 
-  const updateParam = (key: keyof PlcConfig["params"], value: string) => {
-    setConfigs((prev) =>
-      prev.map((c) =>
-        c.id === selectedId
-          ? { ...c, params: { ...c.params, [key]: value } }
-          : c,
-      ),
-    );
+  const startNew = () => {
+    setDraft(createEmptyPlcConfig());
+    setSelectedId(null);
+    setIsNew(true);
+    setConnected(false);
   };
 
-  const addConfig = () => {
-    const id = `cfg-${Date.now()}`;
-    const newConfig: PlcConfig = {
-      ...SEED_CONFIGS[0],
-      id,
-      name: "New Config",
-      ip: "",
-    };
-    setConfigs((prev) => [newConfig, ...prev]);
-    setSelectedId(id);
+  const updateField = <K extends keyof PlcConfiguration>(key: K, value: PlcConfiguration[K]) => {
+    setDraft((prev) => ({ ...prev, [key]: value }));
   };
+
+  const updateParam = (key: keyof PlcConfiguration["params"], value: string) => {
+    setDraft((prev) => ({
+      ...prev,
+      params: { ...prev.params, [key]: value },
+    }));
+  };
+
+  const saveSettings = () => {
+    if (isNew) {
+      onUpdate({
+        ...profile,
+        plcConfigurations: [...configs, draft],
+      });
+      setSelectedId(draft.id);
+      setIsNew(false);
+    } else {
+      onUpdate({
+        ...profile,
+        plcConfigurations: configs.map((c) => (c.id === draft.id ? draft : c)),
+      });
+    }
+  };
+
+  const disabled = readOnly;
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -143,23 +71,24 @@ export function PlcConfigPage() {
         title="PLC Configuration"
         subtitle="Connection settings — saved to user config"
         actions={
-          <Btn onClick={addConfig}>
-            <Plus className="h-3.5 w-3.5" />
-            New Config
-          </Btn>
+          !readOnly ? (
+            <Btn onClick={startNew}>
+              <Plus className="h-3.5 w-3.5" />
+              New Configuration
+            </Btn>
+          ) : undefined
         }
       />
 
       <div className="flex min-h-0 flex-1">
-        {/* Config list — fixed */}
         <aside className="w-56 shrink-0 border-r border-border bg-sidebar/30 p-3">
           <div className="flex flex-col gap-1">
             {configs.map((config) => {
-              const active = config.id === selectedId;
+              const active = config.id === selectedId && !isNew;
               return (
                 <button
                   key={config.id}
-                  onClick={() => setSelectedId(config.id)}
+                  onClick={() => selectConfig(config)}
                   className={cn(
                     "rounded-md px-3 py-2.5 text-left transition",
                     active
@@ -167,7 +96,7 @@ export function PlcConfigPage() {
                       : "text-foreground hover:bg-sidebar-accent",
                   )}
                 >
-                  <div className="text-sm font-semibold">{config.name}</div>
+                  <div className="text-sm font-semibold">{config.name || "Unnamed"}</div>
                   <div
                     className={cn(
                       "mt-0.5 text-xs",
@@ -179,16 +108,19 @@ export function PlcConfigPage() {
                 </button>
               );
             })}
+            {configs.length === 0 && (
+              <p className="px-2 py-3 text-xs text-muted-foreground">No configurations yet.</p>
+            )}
           </div>
         </aside>
 
-        {/* Details — scrollable */}
         <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6">
-          <ConfigSection title="Edit Configuration">
+          <ConfigSection title="Configuration">
             <Field label="Config Name">
               <Input
-                value={selected.name}
+                value={draft.name}
                 onChange={(e) => updateField("name", e.target.value)}
+                disabled={disabled}
               />
             </Field>
           </ConfigSection>
@@ -197,142 +129,98 @@ export function PlcConfigPage() {
             <div className="grid grid-cols-2 gap-4">
               <Field label="IP Address">
                 <Input
-                  value={selected.ip}
+                  value={draft.ip}
                   onChange={(e) => updateField("ip", e.target.value)}
                   placeholder="192.168.0.10"
+                  disabled={disabled}
                 />
               </Field>
               <Field label="Rack">
                 <Input
                   type="number"
-                  value={selected.rack}
+                  value={draft.rack}
                   onChange={(e) => updateField("rack", e.target.value)}
+                  disabled={disabled}
                 />
               </Field>
               <Field label="Slot">
                 <Input
                   type="number"
-                  value={selected.slot}
+                  value={draft.slot}
                   onChange={(e) => updateField("slot", e.target.value)}
+                  disabled={disabled}
                 />
               </Field>
               <Field label="DB Number">
                 <Input
                   type="number"
-                  value={selected.dbNumber}
+                  value={draft.dbNumber}
                   onChange={(e) => updateField("dbNumber", e.target.value)}
+                  disabled={disabled}
                 />
               </Field>
             </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <Btn variant="success" onClick={() => setConnected(true)}>
-                <Plug className="h-3.5 w-3.5" />
-                Connect
-              </Btn>
-              <Btn variant="danger" onClick={() => setConnected(false)}>
-                <Unplug className="h-3.5 w-3.5" />
-                Disconnect
-              </Btn>
-            </div>
+            {!readOnly && (
+              <div className="mt-4 flex justify-end gap-2">
+                <Btn variant="success" onClick={() => setConnected(true)}>
+                  <Plug className="h-3.5 w-3.5" />
+                  Connect
+                </Btn>
+                <Btn variant="danger" onClick={() => setConnected(false)}>
+                  <Unplug className="h-3.5 w-3.5" />
+                  Disconnect
+                </Btn>
+              </div>
+            )}
             {connected && (
               <p className="mt-3 text-right text-xs text-success">
-                Connected to {selected.ip || "—"}
+                Connected to {draft.ip || "—"}
               </p>
             )}
           </ConfigSection>
 
           <ConfigSection title="PLC Parameters">
             <div className="grid grid-cols-3 gap-4">
-              <Field label="Encoder PPR">
-                <Input
-                  type="number"
-                  value={selected.params.encoderPpr}
-                  onChange={(e) => updateParam("encoderPpr", e.target.value)}
-                />
-              </Field>
-              <Field label="Pulses/Cap">
-                <Input
-                  type="number"
-                  value={selected.params.pulsesPerCap}
-                  onChange={(e) => updateParam("pulsesPerCap", e.target.value)}
-                />
-              </Field>
-              <Field label="Trigger Pulse (ms)">
-                <Input
-                  type="number"
-                  value={selected.params.triggerPulseMs}
-                  onChange={(e) => updateParam("triggerPulseMs", e.target.value)}
-                />
-              </Field>
-              <Field label="Light Trigger (ms)">
-                <Input
-                  type="number"
-                  value={selected.params.lightTriggerMs}
-                  onChange={(e) => updateParam("lightTriggerMs", e.target.value)}
-                />
-              </Field>
-              <Field label="Result Wait (ms)">
-                <Input
-                  type="number"
-                  value={selected.params.resultWaitMs}
-                  onChange={(e) => updateParam("resultWaitMs", e.target.value)}
-                />
-              </Field>
-              <Field label="Trigger Delay (ms)">
-                <Input
-                  type="number"
-                  value={selected.params.triggerDelayMs}
-                  onChange={(e) => updateParam("triggerDelayMs", e.target.value)}
-                />
-              </Field>
-              <Field label="Trigger Delay Count">
-                <Input
-                  type="number"
-                  value={selected.params.triggerDelayCount}
-                  onChange={(e) => updateParam("triggerDelayCount", e.target.value)}
-                />
-              </Field>
-              <Field label="SOV ON Time (ms)">
-                <Input
-                  type="number"
-                  value={selected.params.sovOnTimeMs}
-                  onChange={(e) => updateParam("sovOnTimeMs", e.target.value)}
-                />
-              </Field>
-              <Field label="Reject Delay Count">
-                <Input
-                  type="number"
-                  value={selected.params.rejectDelayCount}
-                  onChange={(e) => updateParam("rejectDelayCount", e.target.value)}
-                />
-              </Field>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <Btn className="bg-foreground text-background hover:bg-foreground/90">
-                Apply PLC
-              </Btn>
+              {(Object.keys(draft.params) as (keyof typeof draft.params)[]).map((key) => (
+                <Field key={key} label={PARAM_LABELS[key]}>
+                  <Input
+                    type="number"
+                    value={draft.params[key]}
+                    onChange={(e) => updateParam(key, e.target.value)}
+                    disabled={disabled}
+                  />
+                </Field>
+              ))}
             </div>
           </ConfigSection>
 
-          <div className="flex justify-end">
-            <Btn>
-              <Save className="h-3.5 w-3.5" />
-              Save Settings
-            </Btn>
-          </div>
+          {!readOnly && (
+            <div className="flex justify-end">
+              <Btn onClick={saveSettings}>
+                <Save className="h-3.5 w-3.5" />
+                Save Settings
+              </Btn>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function ConfigSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+const PARAM_LABELS: Record<string, string> = {
+  encoderPpr: "Encoder PPR",
+  pulsesPerCap: "Pulses/Cap",
+  triggerPulseMs: "Trigger Pulse (ms)",
+  lightTriggerMs: "Light Trigger (ms)",
+  resultWaitMs: "Result Wait (ms)",
+  triggerDelayMs: "Trigger Delay (ms)",
+  triggerDelayCount: "Trigger Delay Count",
+  sovOnTimeMs: "SOV ON Time (ms)",
+  rejectDelayCount: "Reject Delay Count",
+};
+
+function ConfigSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="rounded-lg border border-border bg-card shadow-sm">
       <header className="border-b border-border px-5 py-3">

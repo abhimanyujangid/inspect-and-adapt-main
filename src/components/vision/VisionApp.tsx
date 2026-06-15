@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { TopBar } from "./TopBar";
 import { Sidebar, type PageKey } from "./Sidebar";
@@ -12,97 +12,172 @@ import { ModelTrainingPage } from "./pages/ModelTrainingPage";
 import { ModelManagerPage } from "./pages/ModelManagerPage";
 import { NewProfileWizard } from "./NewProfileWizard";
 import { ManageProfilesDrawer } from "./ManageProfilesDrawer";
-import { SEED_MODELS, type TrainedModel } from "./TrainedModelsPanel";
+import {
+  activateProfile,
+  finishProfile,
+  loadVisionStorage,
+  saveVisionStorage,
+  type Profile,
+  type VisionStorage,
+} from "@/lib/vision-storage";
 
-export type Profile = {
-  id: string;
-  name: string;
-  product: string;
-  status: "Ready" | "Training" | "Incomplete" | "Error";
-  created: string;
-  modified: string;
-};
+type WizardMode = "create" | "edit" | null;
 
-const SEED_PROFILES: Profile[] = [
-  { id: "p1", name: "Bottle Cap V1", product: "Bottle Cap", status: "Ready", created: "2025-09-12", modified: "2026-05-30" },
-  { id: "p2", name: "Bottle Cap V2", product: "Bottle Cap", status: "Ready", created: "2026-01-08", modified: "2026-06-09" },
-  { id: "p3", name: "Blue Cap Inspection", product: "Blue Cap", status: "Training", created: "2026-04-22", modified: "2026-06-10" },
-  { id: "p4", name: "Red Cap Inspection", product: "Red Cap", status: "Incomplete", created: "2026-05-30", modified: "2026-06-04" },
-];
+const SETUP_PAGES: PageKey[] = ["plc", "camera", "capture", "gallery", "training", "models"];
 
 export function VisionApp() {
+  const [storage, setStorage] = useState<VisionStorage>(() => loadVisionStorage());
   const [page, setPage] = useState<PageKey>("dashboard");
-  const [profiles, setProfiles] = useState<Profile[]>(SEED_PROFILES);
-  const [models, setModels] = useState<TrainedModel[]>(SEED_MODELS);
-  const [activeProfileId, setActiveProfileId] = useState("p2");
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardMode, setWizardMode] = useState<WizardMode>(null);
+  const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [manageOpen, setManageOpen] = useState(false);
   const [role, setRole] = useState<"Admin" | "Operator">("Admin");
+  const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const activeProfile = profiles.find((p) => p.id === activeProfileId)!;
+  const { profiles, activeProfileId } = storage;
+  const activeProfile = profiles.find((p) => p.id === activeProfileId) ?? null;
+  const editingProfile = profiles.find((p) => p.id === editingProfileId) ?? null;
+  const isReadOnly = !wizardOpen && activeProfile?.status === "active";
+
+  const persist = useCallback((next: VisionStorage) => {
+    setStorage(next);
+    if (persistTimer.current) clearTimeout(persistTimer.current);
+    persistTimer.current = setTimeout(() => saveVisionStorage(next), 300);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (persistTimer.current) clearTimeout(persistTimer.current);
+    };
+  }, []);
+
+  const updateProfile = useCallback(
+    (updated: Profile) => {
+      persist({
+        ...storage,
+        profiles: storage.profiles.map((p) => (p.id === updated.id ? updated : p)),
+      });
+    },
+    [storage, persist],
+  );
+
+  const openCreateWizard = () => {
+    setWizardMode("create");
+    setEditingProfileId(null);
+    setWizardOpen(true);
+  };
+
+  const openEditWizard = (profileId: string) => {
+    setWizardMode("edit");
+    setEditingProfileId(profileId);
+    setWizardOpen(true);
+    setManageOpen(false);
+  };
+
+  const closeWizard = () => {
+    setWizardOpen(false);
+    setWizardMode(null);
+    setEditingProfileId(null);
+  };
+
+  const handleActivate = (profileId: string) => {
+    persist({
+      ...storage,
+      profiles: activateProfile(storage.profiles, profileId),
+      activeProfileId: profileId,
+    });
+  };
+
+  const handleDelete = (profileId: string) => {
+    const remaining = storage.profiles.filter((p) => p.id !== profileId);
+    let nextActiveId = storage.activeProfileId;
+    let nextProfiles = remaining;
+
+    if (profileId === storage.activeProfileId) {
+      const fallback = remaining[0];
+      nextActiveId = fallback?.id ?? "";
+      nextProfiles = remaining.map((p, i) =>
+        i === 0 && fallback ? { ...p, status: "active" as const } : { ...p, status: p.status === "active" ? "inactive" as const : p.status },
+      );
+    }
+
+    persist({ profiles: nextProfiles, activeProfileId: nextActiveId });
+  };
+
+  const handleFinish = (profileId: string) => {
+    persist({
+      profiles: finishProfile(storage.profiles, profileId),
+      activeProfileId: profileId,
+    });
+    closeWizard();
+  };
+
+  const profileProps = (profile: Profile) => ({
+    profile,
+    readOnly: isReadOnly,
+    onUpdate: updateProfile,
+  });
 
   const renderPage = () => {
-    switch (page) {
-      case "dashboard": return <DashboardPage profile={activeProfile} />;
-      case "alarm": return <AlarmPage />;
-      case "plc": return <PlcConfigPage />;
-      case "camera": return <CameraConfigPage />;
-      case "capture": return <ImageCapturePage />;
-      case "gallery": return <GalleryPage />;
-      case "training": return <ModelTrainingPage />;
-      case "models": return (
-        <ModelManagerPage
-          models={models}
-          onSaveThreshold={(id, threshold) =>
-            setModels((prev) =>
-              prev.map((m) => (m.id === id ? { ...m, threshold } : m)),
-            )
-          }
-        />
+    if (!activeProfile && SETUP_PAGES.includes(page)) {
+      return (
+        <div className="flex h-full items-center justify-center p-8 text-sm text-muted-foreground">
+          No active profile. Create or activate a profile to view this page.
+        </div>
       );
+    }
+
+    switch (page) {
+      case "dashboard":
+        return <DashboardPage profile={activeProfile} />;
+      case "alarm":
+        return <AlarmPage />;
+      case "plc":
+        return activeProfile ? <PlcConfigPage {...profileProps(activeProfile)} /> : null;
+      case "camera":
+        return activeProfile ? <CameraConfigPage {...profileProps(activeProfile)} /> : null;
+      case "capture":
+        return activeProfile ? <ImageCapturePage {...profileProps(activeProfile)} /> : null;
+      case "gallery":
+        return activeProfile ? <GalleryPage {...profileProps(activeProfile)} /> : null;
+      case "training":
+        return activeProfile ? <ModelTrainingPage {...profileProps(activeProfile)} /> : null;
+      case "models":
+        return activeProfile ? <ModelManagerPage {...profileProps(activeProfile)} /> : null;
     }
   };
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background text-foreground">
       <TopBar
-        profiles={profiles}
         activeProfile={activeProfile}
-        onSelectProfile={setActiveProfileId}
-        onNewProfile={() => setWizardOpen(true)}
+        onNewProfile={openCreateWizard}
         onManageProfiles={() => setManageOpen(true)}
         role={role}
         onToggleRole={() => setRole((r) => (r === "Admin" ? "Operator" : "Admin"))}
       />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar current={page} onNavigate={setPage} />
-        <main className={cn("flex-1", page === "camera" || page === "plc" || page === "models" ? "overflow-hidden" : "overflow-auto")}>
+        <main
+          className={cn(
+            "flex-1",
+            page === "camera" || page === "plc" || page === "models" ? "overflow-hidden" : "overflow-auto",
+          )}
+        >
           {renderPage()}
         </main>
       </div>
 
       {wizardOpen && (
         <NewProfileWizard
-          onClose={() => setWizardOpen(false)}
-          models={models}
-          onCreate={(p) => {
-            setProfiles((prev) => [...prev, p]);
-            setModels((prev) => [
-              ...prev,
-              {
-                id: `m${Date.now()}`,
-                name: `${p.name} Model`,
-                subtitle: "No IP set",
-                dataset: p.name.toLowerCase().replace(/\s+/g, "_"),
-                capType: p.name,
-                images: "127",
-                backbone: "PatchCore",
-                threshold: "0.56",
-              },
-            ]);
-            setActiveProfileId(p.id);
-            setWizardOpen(false);
-          }}
+          mode={wizardMode ?? "create"}
+          editingProfile={editingProfile}
+          onClose={closeWizard}
+          onPersist={persist}
+          storage={storage}
+          onSetEditingId={setEditingProfileId}
+          onFinish={handleFinish}
         />
       )}
 
@@ -111,8 +186,9 @@ export function VisionApp() {
         onClose={() => setManageOpen(false)}
         profiles={profiles}
         activeProfileId={activeProfileId}
-        onActivate={setActiveProfileId}
-        onDelete={(id) => setProfiles((p) => p.filter((x) => x.id !== id))}
+        onActivate={handleActivate}
+        onEdit={openEditWizard}
+        onDelete={handleDelete}
       />
     </div>
   );

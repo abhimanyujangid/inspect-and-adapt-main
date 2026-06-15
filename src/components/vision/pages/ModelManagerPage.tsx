@@ -1,13 +1,8 @@
 import { PageHeader } from "../ui";
-import { TrainedModelsPanel, type TrainedModel } from "../TrainedModelsPanel";
+import { TrainedModelsPanel } from "../TrainedModelsPanel";
+import type { ProfilePageProps } from "@/lib/vision-storage";
 
-export function ModelManagerPage({
-  models,
-  onSaveThreshold,
-}: {
-  models: TrainedModel[];
-  onSaveThreshold: (id: string, threshold: string) => void;
-}) {
+export function ModelManagerPage(props: ProfilePageProps) {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <PageHeader
@@ -15,7 +10,7 @@ export function ModelManagerPage({
         subtitle="Trained models available for deployment"
       />
       <div className="min-h-0 flex-1">
-        <TrainedModelsPanel models={models} onSaveThreshold={onSaveThreshold} />
+        <TrainedModelsPanel {...props} />
       </div>
     </div>
   );

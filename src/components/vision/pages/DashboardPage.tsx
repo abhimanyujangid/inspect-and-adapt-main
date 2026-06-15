@@ -1,12 +1,13 @@
-import type { Profile } from "../VisionApp";
+import type { Profile } from "@/lib/vision-storage";
 import { cn } from "@/lib/utils";
 
-export function DashboardPage({ profile }: { profile: Profile }) {
+export function DashboardPage({ profile }: { profile: Profile | null }) {
   return (
     <div className="px-8 py-6">
       <h1 className="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Live inspection overview — backend integration pending · {profile.name}
+        Live inspection overview — backend integration pending
+        {profile ? ` · ${profile.capName}` : " · No active profile"}
       </p>
 
       <div className="mt-6 grid grid-cols-4 gap-5">
