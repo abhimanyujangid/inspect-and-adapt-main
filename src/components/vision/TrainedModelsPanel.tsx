@@ -60,11 +60,13 @@ export const SEED_MODELS: TrainedModel[] = [
 export function TrainedModelsPanel({
   models,
   onSaveThreshold,
+  defaultSelectedId,
 }: {
   models: TrainedModel[];
   onSaveThreshold?: (id: string, threshold: string) => void;
+  defaultSelectedId?: string;
 }) {
-  const [selectedId, setSelectedId] = useState(models[0]?.id ?? "");
+  const [selectedId, setSelectedId] = useState(defaultSelectedId ?? models[0]?.id ?? "");
   const [threshold, setThreshold] = useState(models[0]?.threshold ?? "0.56");
 
   const selected = models.find((m) => m.id === selectedId) ?? models[0];
