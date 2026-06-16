@@ -22,43 +22,44 @@ export function AlarmPage() {
           <Btn>Acknowledge All</Btn>
         </>}
       />
-      <div className="grid grid-cols-12 gap-4 p-6">
+      <div className="grid grid-cols-12 gap-3 p-5">
         <Panel title="Active" className="col-span-3">
-          <div className="text-3xl font-semibold font-mono-tabular text-destructive">2</div>
-          <div className="text-xs text-muted-foreground">Unacknowledged alarms</div>
+          <div className="text-3xl font-bold font-mono-tabular text-destructive">2</div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Unacknowledged</div>
         </Panel>
         <Panel title="24h Summary" className="col-span-9">
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <SummaryRow icon={<AlertCircle className="h-4 w-4 text-destructive" />} label="Critical" value="4" />
-            <SummaryRow icon={<AlertTriangle className="h-4 w-4 text-warning" />} label="Warnings" value="11" />
-            <SummaryRow icon={<Info className="h-4 w-4 text-primary" />} label="Info" value="38" />
+          <div className="grid grid-cols-3 gap-3 text-sm">
+            <SummaryRow icon={<AlertCircle className="h-3.5 w-3.5 text-destructive" />} label="Critical" value="4" />
+            <SummaryRow icon={<AlertTriangle className="h-3.5 w-3.5 text-warning" />} label="Warnings" value="11" />
+            <SummaryRow icon={<Info className="h-3.5 w-3.5 text-primary" />} label="Info" value="38" />
           </div>
         </Panel>
 
+        {/* Event log table — maps to QTableWidget in PySide6 */}
         <Panel title="Event Log" className="col-span-12">
-          <table className="w-full text-sm">
-            <thead className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          <table className="w-full text-[11px]">
+            <thead className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
               <tr className="border-b border-border">
-                <th className="py-2 text-left font-semibold">Time</th>
-                <th className="py-2 text-left font-semibold">Severity</th>
-                <th className="py-2 text-left font-semibold">Code</th>
-                <th className="py-2 text-left font-semibold">Message</th>
-                <th className="py-2 text-right font-semibold">Status</th>
+                <th className="py-1.5 text-left font-bold">Time</th>
+                <th className="py-1.5 text-left font-bold">Severity</th>
+                <th className="py-1.5 text-left font-bold">Code</th>
+                <th className="py-1.5 text-left font-bold">Message</th>
+                <th className="py-1.5 text-right font-bold">Status</th>
               </tr>
             </thead>
             <tbody>
               {ALARMS.map((a, i) => (
                 <tr key={i} className="border-b border-border/50">
-                  <td className="py-2 font-mono-tabular text-muted-foreground">{a.t}</td>
-                  <td className="py-2">
+                  <td className="py-1.5 font-mono-tabular text-muted-foreground">{a.t}</td>
+                  <td className="py-1.5">
                     {a.sev === "critical" && <Badge tone="destructive">CRITICAL</Badge>}
                     {a.sev === "warning" && <Badge tone="warning">WARNING</Badge>}
                     {a.sev === "info" && <Badge tone="primary">INFO</Badge>}
                   </td>
-                  <td className="py-2 font-mono-tabular text-xs text-muted-foreground">{a.code}</td>
-                  <td className="py-2">{a.msg}</td>
-                  <td className="py-2 text-right">
-                    {a.ack ? <Badge>ACK</Badge> : <Btn variant="outline" className="h-7 px-2">Acknowledge</Btn>}
+                  <td className="py-1.5 font-mono-tabular text-muted-foreground">{a.code}</td>
+                  <td className="py-1.5 text-foreground">{a.msg}</td>
+                  <td className="py-1.5 text-right">
+                    {a.ack ? <Badge>ACK</Badge> : <Btn variant="outline" className="h-6 px-2">Acknowledge</Btn>}
                   </td>
                 </tr>
               ))}
@@ -72,10 +73,10 @@ export function AlarmPage() {
 
 function SummaryRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-md border border-border bg-surface px-3 py-2">
+    <div className="flex items-center gap-2 border border-border bg-surface px-3 py-2 rounded-sm">
       {icon}
-      <div className="flex-1 text-xs text-muted-foreground">{label}</div>
-      <div className="font-mono-tabular text-lg font-semibold">{value}</div>
+      <div className="flex-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="font-mono-tabular text-base font-bold">{value}</div>
     </div>
   );
 }

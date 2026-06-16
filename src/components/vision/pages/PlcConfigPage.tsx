@@ -73,15 +73,16 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
         actions={
           !readOnly ? (
             <Btn onClick={startNew}>
-              <Plus className="h-3.5 w-3.5" />
-              New Configuration
+              <Plus className="h-3 w-3" />
+              New Config
             </Btn>
           ) : undefined
         }
       />
 
       <div className="flex min-h-0 flex-1">
-        <aside className="w-56 shrink-0 border-r border-border bg-sidebar/30 p-3">
+        {/* Config list sidebar — maps to QListWidget */}
+        <aside className="w-48 shrink-0 border-r border-border bg-sidebar p-2">
           <div className="flex flex-col gap-1">
             {configs.map((config) => {
               const active = config.id === selectedId && !isNew;
@@ -90,31 +91,27 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
                   key={config.id}
                   onClick={() => selectConfig(config)}
                   className={cn(
-                    "rounded-md px-3 py-2.5 text-left transition",
+                    "rounded-sm px-3 py-2 text-left",
                     active
-                      ? "bg-primary text-primary-foreground"
-                      : "text-foreground hover:bg-sidebar-accent",
+                      ? "border-l-2 border-primary bg-primary/10 text-primary"
+                      : "border-l-2 border-transparent text-foreground hover:bg-surface-2",
                   )}
                 >
-                  <div className="text-sm font-semibold">{config.name || "Unnamed"}</div>
-                  <div
-                    className={cn(
-                      "mt-0.5 text-xs",
-                      active ? "text-primary-foreground/80" : "text-muted-foreground",
-                    )}
-                  >
+                  <div className="text-[11px] font-bold">{config.name || "Unnamed"}</div>
+                  <div className={cn("mt-0.5 font-mono-tabular text-[9px]", active ? "text-primary/70" : "text-muted-foreground")}>
                     {config.ip || "No IP set"}
                   </div>
                 </button>
               );
             })}
             {configs.length === 0 && (
-              <p className="px-2 py-3 text-xs text-muted-foreground">No configurations yet.</p>
+              <p className="px-2 py-3 text-[10px] text-muted-foreground">No configurations yet.</p>
             )}
           </div>
         </aside>
 
-        <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6">
+        {/* Config form — maps to QFormLayout */}
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
           <ConfigSection title="Configuration">
             <Field label="Config Name">
               <Input
@@ -126,7 +123,7 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
           </ConfigSection>
 
           <ConfigSection title="Connection">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <Field label="IP Address">
                 <Input
                   value={draft.ip}
@@ -161,26 +158,26 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
               </Field>
             </div>
             {!readOnly && (
-              <div className="mt-4 flex justify-end gap-2">
+              <div className="mt-3 flex justify-end gap-2">
                 <Btn variant="success" onClick={() => setConnected(true)}>
-                  <Plug className="h-3.5 w-3.5" />
+                  <Plug className="h-3 w-3" />
                   Connect
                 </Btn>
                 <Btn variant="danger" onClick={() => setConnected(false)}>
-                  <Unplug className="h-3.5 w-3.5" />
+                  <Unplug className="h-3 w-3" />
                   Disconnect
                 </Btn>
               </div>
             )}
             {connected && (
-              <p className="mt-3 text-right text-xs text-success">
-                Connected to {draft.ip || "—"}
+              <p className="mt-2 text-right text-[10px] font-bold text-success">
+                ● Connected to {draft.ip || "—"}
               </p>
             )}
           </ConfigSection>
 
           <ConfigSection title="PLC Parameters">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-3">
               {(Object.keys(draft.params) as (keyof typeof draft.params)[]).map((key) => (
                 <Field key={key} label={PARAM_LABELS[key]}>
                   <Input
@@ -197,7 +194,7 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
           {!readOnly && (
             <div className="flex justify-end">
               <Btn onClick={saveSettings}>
-                <Save className="h-3.5 w-3.5" />
+                <Save className="h-3 w-3" />
                 Save Settings
               </Btn>
             </div>
@@ -222,11 +219,11 @@ const PARAM_LABELS: Record<string, string> = {
 
 function ConfigSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-lg border border-border bg-card shadow-sm">
-      <header className="border-b border-border px-5 py-3">
-        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+    <section className="border border-border bg-card rounded-sm">
+      <header className="border-b-2 border-primary bg-surface-2 px-4 py-2">
+        <h2 className="text-[10px] font-bold uppercase tracking-wider text-primary">{title}</h2>
       </header>
-      <div className="p-5">{children}</div>
+      <div className="p-4">{children}</div>
     </section>
   );
 }

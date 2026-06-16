@@ -24,7 +24,7 @@ export function TrainedModelsPanel({
 
   if (!selected) {
     return (
-      <div className="flex h-full items-center justify-center p-8 text-sm text-muted-foreground">
+      <div className="flex h-full items-center justify-center p-8 text-[11px] text-muted-foreground">
         No trained models yet. Train a model in the Model Training step.
       </div>
     );
@@ -68,8 +68,9 @@ export function TrainedModelsPanel({
   return (
     <>
       <div className="flex h-full min-h-0">
-        <aside className="w-56 shrink-0 border-r border-border bg-sidebar/30 p-3">
-          <div className="mb-3 px-2 text-sm font-semibold text-foreground">Trained Models</div>
+        {/* Model list — maps to QListWidget */}
+        <aside className="w-48 shrink-0 border-r border-border bg-sidebar p-2">
+          <div className="mb-2 px-2 text-[9px] font-bold uppercase tracking-[0.12em] text-primary">Trained Models</div>
           <div className="flex flex-col gap-1">
             {models.map((model) => {
               const active = model.id === selectedId;
@@ -78,26 +79,21 @@ export function TrainedModelsPanel({
                   key={model.id}
                   onClick={() => selectModel(model.id)}
                   className={cn(
-                    "rounded-md px-3 py-2.5 text-left transition",
+                    "rounded-sm px-3 py-2 text-left",
                     active
-                      ? "bg-primary text-primary-foreground"
-                      : "text-foreground hover:bg-sidebar-accent",
+                      ? "border-l-2 border-primary bg-primary/10 text-primary"
+                      : "border-l-2 border-transparent text-foreground hover:bg-surface-2",
                   )}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold">{model.name}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold">{model.name}</span>
                     {model.active && (
-                      <span className="rounded bg-success/20 px-1.5 py-0.5 text-[10px] font-bold uppercase text-success">
+                      <span className="rounded-sm bg-success/20 border border-success/40 px-1 py-0.5 text-[7px] font-black uppercase text-success">
                         Active
                       </span>
                     )}
                   </div>
-                  <div
-                    className={cn(
-                      "mt-0.5 text-xs",
-                      active ? "text-primary-foreground/80" : "text-muted-foreground",
-                    )}
-                  >
+                  <div className={cn("mt-0.5 text-[9px] font-bold", active ? "text-primary/60" : "text-muted-foreground")}>
                     {dataset?.name ?? "Unknown dataset"}
                   </div>
                 </button>
@@ -106,36 +102,37 @@ export function TrainedModelsPanel({
           </div>
         </aside>
 
-        <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6">
+        {/* Model detail — maps to QFormLayout */}
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-5">
           <ModelSection title={selected.name}>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               <InfoItem label="Dataset" value={dataset?.name ?? "—"} />
               <InfoItem label="Cap Type" value={profile.capName} />
               <InfoItem label="Training Images" value={String(dataset?.images.length ?? 0)} />
               <InfoItem label="Status" value={selected.status} />
             </div>
             {!readOnly && (
-              <div className="mt-5 flex justify-end gap-2">
+              <div className="mt-4 flex justify-end gap-2">
                 {selected.active ? (
                   <Btn variant="outline" onClick={deactivateModel}>Deactivate</Btn>
                 ) : (
                   <Btn variant="success" onClick={activateModel}>
-                    <RefreshCw className="h-3.5 w-3.5" />
+                    <RefreshCw className="h-3 w-3" />
                     Activate Model
                   </Btn>
                 )}
-                <Btn variant="danger" className="px-2.5" onClick={() => setDeleteId(selected.id)}>
-                  <Trash2 className="h-3.5 w-3.5" />
+                <Btn variant="danger" className="px-2" onClick={() => setDeleteId(selected.id)}>
+                  <Trash2 className="h-3 w-3" />
                 </Btn>
               </div>
             )}
           </ModelSection>
 
           <ModelSection title="Reject Threshold">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-[10px] text-muted-foreground">
               Lower = more sensitive, more rejections. Higher = less sensitive, may miss defects.
             </p>
-            <div className="mt-4">
+            <div className="mt-3">
               <Field label="Threshold Value">
                 <Input
                   type="number"
@@ -147,14 +144,14 @@ export function TrainedModelsPanel({
                   disabled={readOnly}
                 />
               </Field>
-              <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+              <div className="mt-1.5 flex justify-between text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
                 <span>More Sensitive: 0.00</span>
                 <span>Less Sensitive: 1.00</span>
               </div>
             </div>
             {!readOnly && (
-              <Btn className="mt-5 h-10 w-full" onClick={saveThreshold}>
-                <Save className="h-4 w-4" />
+              <Btn className="mt-4 h-8 w-full" onClick={saveThreshold}>
+                <Save className="h-3 w-3" />
                 Save Threshold
               </Btn>
             )}
@@ -177,11 +174,11 @@ export function TrainedModelsPanel({
 
 function ModelSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-lg border border-border bg-card shadow-sm">
-      <header className="border-b border-border px-5 py-3">
-        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+    <section className="border border-border bg-card rounded-sm">
+      <header className="border-b-2 border-primary bg-surface-2 px-4 py-2">
+        <h2 className="text-[10px] font-bold uppercase tracking-wider text-primary">{title}</h2>
       </header>
-      <div className="p-5">{children}</div>
+      <div className="p-4">{children}</div>
     </section>
   );
 }
@@ -189,8 +186,8 @@ function ModelSection({ title, children }: { title: string; children: React.Reac
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-xs font-medium text-muted-foreground">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-foreground">{value}</div>
+      <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{label}</div>
+      <div className="mt-0.5 font-mono-tabular text-[12px] font-bold text-foreground">{value}</div>
     </div>
   );
 }

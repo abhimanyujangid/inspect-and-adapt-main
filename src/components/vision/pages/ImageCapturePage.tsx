@@ -66,36 +66,38 @@ export function ImageCapturePage({ profile, readOnly, onUpdate }: ProfilePagePro
         subtitle="Acquire training images — backend pending"
         actions={
           !readOnly ? (
-            <Btn className="h-11 px-5 text-sm" onClick={() => setModalOpen(true)}>
-              <FolderPlus className="h-4 w-4" />
+            <Btn onClick={() => setModalOpen(true)}>
+              <FolderPlus className="h-3 w-3" />
               Create Dataset
             </Btn>
           ) : undefined
         }
       />
 
-      <div className="p-6">
-        <div className="grid grid-cols-2 gap-6">
-          <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-            <div className="flex items-center justify-between bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground">
+      <div className="p-5">
+        <div className="grid grid-cols-2 gap-4">
+          {/* Live preview — maps to QLabel with QPixmap */}
+          <div className="overflow-hidden border border-border bg-card rounded-sm">
+            <div className="flex items-center justify-between bg-primary px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
               <span>Live Preview</span>
-              <span>Dataset: {selectedDataset?.name ?? "—"}</span>
+              <span className="font-mono-tabular">Dataset: {selectedDataset?.name ?? "—"}</span>
             </div>
-            <div className="flex h-[440px] items-center justify-center bg-[oklch(0.22_0.01_250)]">
+            <div className="flex h-[400px] items-center justify-center bg-[#111318] grid-bg">
               {previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="max-h-full max-w-full object-contain" />
               ) : (
-                <span className="text-sm text-muted-foreground">No image captured</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">No image captured</span>
               )}
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <h2 className="text-base font-semibold text-foreground">Image Captured</h2>
-            <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
-              <div className="grid grid-cols-2 gap-5">
+          {/* Capture controls — maps to QGroupBox with QFormLayout */}
+          <div className="flex flex-col gap-3">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-primary">Image Capture Controls</div>
+            <div className="border border-border bg-card p-4 rounded-sm">
+              <div className="grid grid-cols-2 gap-3">
                 <CaptureField label="Select Camera">
-                  <select className="h-12 w-full rounded-md border border-border bg-card px-3 text-sm" disabled={readOnly}>
+                  <select className="h-8 w-full rounded-sm border border-border bg-input px-2 text-[11px] disabled:opacity-50" disabled={readOnly}>
                     {CAMERA_OPTIONS.map((o) => <option key={o}>{o}</option>)}
                   </select>
                 </CaptureField>
@@ -103,7 +105,7 @@ export function ImageCapturePage({ profile, readOnly, onUpdate }: ProfilePagePro
                   <select
                     value={selectedDatasetId}
                     onChange={(e) => setSelectedDatasetId(e.target.value)}
-                    className="h-12 w-full rounded-md border border-border bg-card px-3 text-sm"
+                    className="h-8 w-full rounded-sm border border-border bg-input px-2 text-[11px] disabled:opacity-50"
                     disabled={readOnly}
                   >
                     {!selectedDatasetId && <option value="">Select dataset</option>}
@@ -119,28 +121,28 @@ export function ImageCapturePage({ profile, readOnly, onUpdate }: ProfilePagePro
                   <button
                     onClick={captureSingle}
                     disabled={!selectedDatasetId}
-                    className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    className="mt-4 flex h-9 w-full items-center justify-center gap-2 rounded-sm bg-primary text-[10px] font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110 disabled:opacity-40"
                   >
-                    <Camera className="h-4 w-4" />
+                    <Camera className="h-3.5 w-3.5" />
                     Capture Single Image
                   </button>
-                  <div className="mt-5 grid grid-cols-2 gap-4">
-                    <CaptureField label="Number of Image to Capture">
+                  <div className="mt-4 grid grid-cols-2 gap-3">
+                    <CaptureField label="Number of Images">
                       <input
                         type="number"
                         value={count}
                         onChange={(e) => setCount(Number(e.target.value))}
-                        className="h-12 w-full rounded-md border border-border bg-card px-3 text-sm"
+                        className="h-8 w-full rounded-sm border border-border bg-input px-2 font-mono-tabular text-[11px]"
                       />
                     </CaptureField>
                     <div className="flex items-end">
                       <button
                         onClick={startCapturing}
                         disabled={!selectedDatasetId}
-                        className="flex h-12 w-full items-center justify-center gap-2 rounded-md border border-border bg-card text-sm font-semibold hover:bg-surface-2 disabled:opacity-50"
+                        className="flex h-8 w-full items-center justify-center gap-2 rounded-sm border border-border bg-surface text-[10px] font-bold uppercase tracking-wider hover:bg-surface-2 disabled:opacity-40"
                       >
-                        <Play className="h-4 w-4" />
-                        Start Capturing
+                        <Play className="h-3 w-3" />
+                        Start Batch
                       </button>
                     </div>
                   </div>
@@ -151,16 +153,17 @@ export function ImageCapturePage({ profile, readOnly, onUpdate }: ProfilePagePro
         </div>
       </div>
 
+      {/* Create dataset modal — maps to QDialog */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-lg border border-border bg-card shadow-lg">
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
-              <h2 className="text-base font-semibold">Create Dataset</h2>
-              <button onClick={() => setModalOpen(false)} className="rounded-md p-1.5 text-muted-foreground hover:bg-surface-2">
-                <X className="h-4 w-4" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-sm border border-border bg-card rounded-sm">
+            <div className="flex items-center justify-between border-b-2 border-primary bg-surface-2 px-4 py-2.5">
+              <h2 className="text-[11px] font-bold uppercase tracking-wider text-primary">Create Dataset</h2>
+              <button onClick={() => setModalOpen(false)} className="rounded-sm p-1 text-muted-foreground hover:bg-surface hover:text-foreground">
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
-            <div className="p-5">
+            <div className="p-4">
               <Field label="Folder Name">
                 <Input
                   value={folderName}
@@ -169,7 +172,7 @@ export function ImageCapturePage({ profile, readOnly, onUpdate }: ProfilePagePro
                   onKeyDown={(e) => e.key === "Enter" && handleCreateDataset()}
                 />
               </Field>
-              <div className="mt-6 flex justify-end gap-2">
+              <div className="mt-4 flex justify-end gap-2">
                 <Btn variant="outline" onClick={() => setModalOpen(false)}>Cancel</Btn>
                 <Btn onClick={handleCreateDataset} disabled={!folderName.trim()}>Create</Btn>
               </div>
@@ -183,8 +186,8 @@ export function ImageCapturePage({ profile, readOnly, onUpdate }: ProfilePagePro
 
 function CaptureField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium text-foreground">{label}</span>
+    <label className="flex flex-col gap-1">
+      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
       {children}
     </label>
   );

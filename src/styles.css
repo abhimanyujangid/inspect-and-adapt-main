@@ -5,17 +5,22 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Industrial Machine Vision design system.
- * Inspired by Cognex VisionPro / Keyence — dark instrumentation UI,
- * crisp data density, a single saturated accent for actionable states,
- * and unambiguous status colors (green / amber / red).
+ * Industrial Machine Vision design system — SCADA / HMI style.
+ * Designed as a PySide6 reference:
+ *   - No box-shadow (Qt QSS does not support it)
+ *   - No CSS transitions/animations (Qt has QPropertyAnimation, not CSS transitions)
+ *   - No backdrop-filter/blur (not in Qt)
+ *   - No gradients (Qt QSS gradients are limited)
+ *   - Solid flat colors, sharp or minimal border-radius
+ *   - High-contrast dark theme for factory floor readability
+ *   - Monospace numerics, LED indicators, toolbar-style headers
  */
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 2px);
-  --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
-  --radius-xl: calc(var(--radius) + 6px);
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -49,69 +54,74 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
 
-  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "Consolas", "SF Mono", ui-monospace, monospace;
 }
 
+/* ─── Dark industrial palette ──────────────────────────────────── */
 :root {
-  --radius: 0.5rem;
+  --radius: 3px;
 
-  --background: oklch(0.985 0.002 250);
-  --foreground: oklch(0.18 0.01 250);
+  /* Charcoal / dark navy background stack */
+  --background: #1a1d23;
+  --foreground: #e0e4ea;
 
-  --surface: oklch(1 0 0);
-  --surface-2: oklch(0.965 0.003 250);
+  --surface: #22262e;
+  --surface-2: #2a2f38;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.01 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.01 250);
+  --card: #22262e;
+  --card-foreground: #e0e4ea;
+  --popover: #22262e;
+  --popover-foreground: #e0e4ea;
 
-  --primary: oklch(0.52 0.18 256);
-  --primary-foreground: oklch(0.99 0 0);
+  /* Teal accent — common in industrial HMIs */
+  --primary: #0ea5e9;
+  --primary-foreground: #ffffff;
 
-  --secondary: oklch(0.95 0.005 250);
-  --secondary-foreground: oklch(0.2 0.01 250);
+  --secondary: #2a2f38;
+  --secondary-foreground: #c0c8d4;
 
-  --muted: oklch(0.96 0.004 250);
-  --muted-foreground: oklch(0.5 0.012 250);
+  --muted: #2a2f38;
+  --muted-foreground: #7a8494;
 
-  --accent: oklch(0.94 0.02 256);
-  --accent-foreground: oklch(0.2 0.01 250);
+  --accent: #1e3a5f;
+  --accent-foreground: #e0e4ea;
 
-  --destructive: oklch(0.58 0.22 27);
-  --destructive-foreground: oklch(0.99 0 0);
+  /* Status colors — ANSI / industrial standard */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
 
-  --success: oklch(0.62 0.17 145);
-  --success-foreground: oklch(0.99 0 0);
+  --success: #22c55e;
+  --success-foreground: #ffffff;
 
-  --warning: oklch(0.78 0.16 75);
-  --warning-foreground: oklch(0.18 0.01 250);
+  --warning: #f59e0b;
+  --warning-foreground: #1a1d23;
 
-  --border: oklch(0.9 0.005 250);
-  --border-strong: oklch(0.82 0.008 250);
-  --input: oklch(1 0 0);
-  --ring: oklch(0.52 0.18 256);
+  /* Borders — visible on dark bg */
+  --border: #333842;
+  --border-strong: #464d5a;
+  --input: #2a2f38;
+  --ring: #0ea5e9;
 
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.22 0.01 250);
-  --sidebar-accent: oklch(0.94 0.02 256);
-  --sidebar-accent-foreground: oklch(0.52 0.18 256);
-  --sidebar-border: oklch(0.92 0.005 250);
+  /* Sidebar */
+  --sidebar: #181b20;
+  --sidebar-foreground: #e0e4ea;
+  --sidebar-accent: #1e3a5f;
+  --sidebar-accent-foreground: #0ea5e9;
+  --sidebar-border: #2a2f38;
 
-  --chart-1: oklch(0.52 0.18 256);
-  --chart-2: oklch(0.62 0.17 145);
-  --chart-3: oklch(0.78 0.16 75);
-  --chart-4: oklch(0.58 0.22 27);
-  --chart-5: oklch(0.55 0.18 300);
-
-  --gradient-panel: linear-gradient(180deg, oklch(1 0 0), oklch(0.99 0.002 250));
-  --shadow-panel: 0 1px 2px oklch(0 0 0 / 5%);
-  --shadow-glow: 0 0 0 1px oklch(0.52 0.18 256 / 30%), 0 0 18px -4px oklch(0.52 0.18 256 / 30%);
+  /* Charts */
+  --chart-1: #0ea5e9;
+  --chart-2: #22c55e;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #a855f7;
 }
 
 .dark {
-  --background: oklch(0.985 0.002 250);
-  --foreground: oklch(0.18 0.01 250);
+  /* Already dark by default — same values */
+  --background: #1a1d23;
+  --foreground: #e0e4ea;
 }
 
 @layer base {
@@ -126,36 +136,77 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-feature-settings: "cv11", "ss01", "ss03";
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* All interactive elements: no outline glow, just border color change (PySide6 pattern) */
+  input:focus,
+  select:focus,
+  button:focus-visible {
+    outline: none;
   }
 }
 
 @layer utilities {
+  /* Panel — flat card, no shadow, no gradient (Qt-compatible) */
   .panel {
-    background: var(--gradient-panel);
+    background: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-panel);
   }
 
+  /* LED indicator — solid circle with a colored border ring */
   .led {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 8px;
+    height: 8px;
     border-radius: 999px;
     display: inline-block;
-    box-shadow: 0 0 0 2px oklch(1 0 0 / 5%), 0 0 8px currentColor;
+    border: 2px solid currentColor;
   }
 
+  .led-glow {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  /* Grid background for camera / viewport areas */
   .grid-bg {
     background-image:
-      linear-gradient(oklch(1 0 0 / 3%) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(1 0 0 / 3%) 1px, transparent 1px);
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
   .font-mono-tabular {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Industrial toolbar header stripe */
+  .toolbar-header {
+    background: #181b20;
+    border-bottom: 1px solid var(--color-border);
+    padding: 8px 16px;
+  }
+
+  /* Section header — flat colored strip */
+  .section-header {
+    background: var(--color-surface-2);
+    border-bottom: 2px solid var(--color-primary);
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-primary);
+  }
+
+  /* Status indicator strips */
+  .status-bar {
+    height: 3px;
+    width: 100%;
   }
 }

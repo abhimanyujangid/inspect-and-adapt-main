@@ -3,35 +3,54 @@ import { cn } from "@/lib/utils";
 
 export function DashboardPage({ profile }: { profile: Profile | null }) {
   return (
-    <div className="px-8 py-6">
-      <h1 className="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Live inspection overview — backend integration pending
-        {profile ? ` · ${profile.capName}` : " · No active profile"}
-      </p>
-
-      <div className="mt-6 grid grid-cols-4 gap-5">
-        <Kpi label="THROUGHPUT" value="1,248" delta="+8.2%" deltaTone="success" />
-        <Kpi label="PASS RATE" value="97.4%" delta="+0.3%" deltaTone="success" />
-        <Kpi label="DEFECTS" value="32" delta="-4.1%" deltaTone="success" />
-        <Kpi label="CYCLE TIME" value="1.2s" delta="stable" deltaTone="muted" />
+    <div className="p-5">
+      {/* Page title strip */}
+      <div className="flex items-center justify-between border-b-2 border-primary pb-3">
+        <div>
+          <h1 className="text-sm font-bold uppercase tracking-wider text-primary">Dashboard</h1>
+          <p className="mt-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+            Live Inspection Overview
+            {profile ? ` · ${profile.capName}` : " · No Active Profile"}
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-success" />
+          <span className="text-[10px] font-bold uppercase tracking-wider text-success">RUNNING</span>
+        </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-5">
-        <StatusCard label="LINE STATUS" value="Running" dot="success" />
-        <StatusCard label="PLC LINK" value="Connected" dot="success" />
-        <StatusCard label="MODEL" value="v2.4 — idle" dot="warning" />
+      {/* KPI tiles */}
+      <div className="mt-4 grid grid-cols-4 gap-3">
+        <Kpi label="Throughput" value="1,248" delta="+8.2%" deltaTone="success" />
+        <Kpi label="Pass Rate" value="97.4%" delta="+0.3%" deltaTone="success" />
+        <Kpi label="Defects" value="32" delta="-4.1%" deltaTone="success" />
+        <Kpi label="Cycle Time" value="1.2s" delta="stable" deltaTone="muted" />
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-5">
+      {/* Status cards */}
+      <div className="mt-3 grid grid-cols-3 gap-3">
+        <StatusCard label="Line Status" value="Running" status="success" />
+        <StatusCard label="PLC Link" value="Connected" status="success" />
+        <StatusCard label="Model" value="v2.4 — idle" status="warning" />
+      </div>
+
+      {/* Camera feed placeholders */}
+      <div className="mt-3 grid grid-cols-2 gap-3">
         <CameraTile n={1} />
         <CameraTile n={2} />
       </div>
 
-      <div className="mt-6 flex gap-3">
-        <button className="h-11 rounded-md bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Start Inspection</button>
-        <button className="h-11 rounded-md bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Pause Line</button>
-        <button className="h-11 rounded-md bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Export Report</button>
+      {/* Action buttons — maps to QPushButton row */}
+      <div className="mt-4 flex gap-2">
+        <button className="h-9 rounded-sm bg-primary px-5 text-[11px] font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110">
+          Start Inspection
+        </button>
+        <button className="h-9 rounded-sm bg-warning px-5 text-[11px] font-bold uppercase tracking-wider text-warning-foreground hover:brightness-110">
+          Pause Line
+        </button>
+        <button className="h-9 rounded-sm border border-border bg-surface px-5 text-[11px] font-bold uppercase tracking-wider text-foreground hover:bg-surface-2">
+          Export Report
+        </button>
       </div>
     </div>
   );
@@ -40,35 +59,40 @@ export function DashboardPage({ profile }: { profile: Profile | null }) {
 function Kpi({ label, value, delta, deltaTone }: { label: string; value: string; delta: string; deltaTone: "success" | "muted" | "destructive" }) {
   const tone = { success: "text-success", muted: "text-muted-foreground", destructive: "text-destructive" }[deltaTone];
   return (
-    <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
-      <div className="text-xs font-semibold tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-3 text-4xl font-bold text-foreground">{value}</div>
-      <div className={cn("mt-6 text-sm font-medium", tone)}>{delta}</div>
+    <div className="border border-border bg-card p-4 rounded-sm">
+      <div className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="mt-2 font-mono-tabular text-3xl font-bold text-foreground">{value}</div>
+      <div className={cn("mt-3 border-t border-border pt-2 text-[11px] font-bold", tone)}>{delta}</div>
     </div>
   );
 }
 
-function StatusCard({ label, value, dot }: { label: string; value: string; dot: "success" | "warning" | "destructive" }) {
-  const c = { success: "bg-success", warning: "bg-warning", destructive: "bg-destructive" }[dot];
+function StatusCard({ label, value, status }: { label: string; value: string; status: "success" | "warning" | "destructive" }) {
+  const ledColor = { success: "bg-success", warning: "bg-warning", destructive: "bg-destructive" }[status];
+  const borderColor = { success: "border-success/40", warning: "border-warning/40", destructive: "border-destructive/40" }[status];
   return (
-    <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
+    <div className={cn("border bg-card p-4 rounded-sm", borderColor)}>
       <div className="flex items-center justify-between">
-        <div className="text-xs font-semibold tracking-wider text-muted-foreground">{label}</div>
-        <span className={cn("h-2.5 w-2.5 rounded-full", c)} />
+        <div className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
+        <span className={cn("h-2 w-2 rounded-full", ledColor)} />
       </div>
-      <div className="mt-3 text-2xl font-bold text-foreground">{value}</div>
+      <div className="mt-2 text-lg font-bold text-foreground">{value}</div>
     </div>
   );
 }
 
 function CameraTile({ n }: { n: number }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-      <div className="flex h-64 items-center justify-center bg-[oklch(0.3_0.01_250)] text-sm text-[oklch(0.88_0_0)]">
-        Camera {n} — placeholder
+    <div className="overflow-hidden border border-border bg-card rounded-sm">
+      <div className="flex h-56 items-center justify-center bg-[#111318] grid-bg text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+        Camera {n} — No Feed
       </div>
-      <div className="bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground">
-        Camera {n} — placeholder
+      <div className="flex items-center justify-between border-t border-border bg-surface-2 px-3 py-2">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">Camera {n}</span>
+        <div className="flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">STANDBY</span>
+        </div>
       </div>
     </div>
   );

@@ -51,26 +51,27 @@ export function ModelTrainingPage({ profile, readOnly, onUpdate }: ProfilePagePr
         subtitle="Configure and monitor training jobs — settings saved on start"
       />
 
-      <div className="p-6">
-        <div className="grid grid-cols-2 gap-8">
+      <div className="p-5">
+        <div className="grid grid-cols-2 gap-5">
+          {/* Config panel — maps to QGroupBox */}
           <section>
-            <h2 className="text-base font-semibold text-foreground">Training Configuration</h2>
-            <div className="mt-4 rounded-lg border border-border bg-card p-5 shadow-sm">
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="Training Label">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">Training Configuration</div>
+            <div className="border border-border bg-card p-4 rounded-sm">
+              <div className="grid grid-cols-2 gap-3">
+                <TrainingField label="Training Label">
                   <input
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
                     disabled={readOnly}
-                    className="h-12 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground focus:border-primary focus:outline-none disabled:opacity-60"
+                    className="h-8 w-full rounded-sm border border-border bg-input px-2 text-[11px] text-foreground focus:border-primary focus:outline-none disabled:opacity-50"
                   />
-                </Field>
-                <Field label="Datasets">
+                </TrainingField>
+                <TrainingField label="Datasets">
                   <select
                     value={datasetId}
                     onChange={(e) => setDatasetId(e.target.value)}
                     disabled={readOnly}
-                    className="h-12 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground focus:border-primary focus:outline-none disabled:opacity-60"
+                    className="h-8 w-full rounded-sm border border-border bg-input px-2 text-[11px] text-foreground focus:border-primary focus:outline-none disabled:opacity-50"
                   >
                     {datasets.length === 0 && <option value="">No datasets</option>}
                     {datasets.map((d) => (
@@ -79,61 +80,61 @@ export function ModelTrainingPage({ profile, readOnly, onUpdate }: ProfilePagePr
                       </option>
                     ))}
                   </select>
-                </Field>
+                </TrainingField>
               </div>
 
-              <div className="mt-4">
-                <Field label="Backbone">
+              <div className="mt-3">
+                <TrainingField label="Backbone">
                   <input
                     value={backbone}
                     placeholder="PatchCore"
                     onChange={(e) => setBackbone(e.target.value)}
                     disabled={readOnly}
-                    className="h-12 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none disabled:opacity-60"
+                    className="h-8 w-full rounded-sm border border-border bg-input px-2 text-[11px] text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none disabled:opacity-50"
                   />
-                </Field>
+                </TrainingField>
               </div>
 
               {!readOnly && (
                 <button
                   onClick={trainModel}
                   disabled={training || !datasetId}
-                  className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                  className="mt-4 flex h-9 w-full items-center justify-center gap-2 rounded-sm bg-primary text-[10px] font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110 disabled:opacity-40"
                 >
-                  <Save className="h-4 w-4" /> Train Model
+                  <Save className="h-3.5 w-3.5" /> Train Model
                 </button>
               )}
             </div>
           </section>
 
-          <section className="flex flex-col gap-6">
+          {/* Progress + logs — maps to QProgressBar + QTextEdit */}
+          <section className="flex flex-col gap-4">
             <div>
-              <h2 className="text-base font-semibold text-foreground">Progress</h2>
-              <div className="mt-4 rounded-lg border border-border bg-card p-5 shadow-sm">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">Progress</div>
+              <div className="border border-border bg-card p-4 rounded-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-foreground">
-                    {training ? "Training in progress..." : progress >= 100 ? "Complete" : "Idle"}
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">
+                    {training ? "Training..." : progress >= 100 ? "Complete" : "Idle"}
                   </span>
-                  <span className="text-sm font-semibold text-foreground">{progress}%</span>
+                  <span className="font-mono-tabular text-[11px] font-bold text-foreground">{progress}%</span>
                 </div>
-                <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+                {/* Progress bar — maps to QProgressBar */}
+                <div className="mt-2 h-2 w-full overflow-hidden bg-surface-2 rounded-sm">
+                  <div className="h-full bg-primary" style={{ width: `${progress}%` }} />
                 </div>
               </div>
             </div>
 
             <div>
-              <h2 className="text-base font-semibold text-foreground">Activity Log</h2>
-              <div className="mt-4 min-h-[360px] rounded-lg border border-border bg-card p-4 shadow-sm">
-                <div className="flex flex-col gap-3">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">Activity Log</div>
+              {/* Log area — maps to QTextEdit (readOnly) */}
+              <div className="min-h-[300px] border border-border bg-[#111318] p-3 rounded-sm font-mono-tabular">
+                <div className="flex flex-col gap-2">
                   {logs.length === 0 && (
-                    <p className="text-sm text-muted-foreground">No activity yet.</p>
+                    <p className="text-[10px] text-muted-foreground">No activity yet.</p>
                   )}
                   {logs.map((l) => (
-                    <div
-                      key={l}
-                      className="rounded-md bg-[oklch(0.3_0.01_250)] px-4 py-3 text-sm text-[oklch(0.95_0_0)]"
-                    >
+                    <div key={l} className="border-l-2 border-primary bg-surface px-3 py-2 text-[10px] text-foreground">
                       {l}
                     </div>
                   ))}
@@ -151,10 +152,10 @@ function time() {
   return new Date().toLocaleTimeString("en-GB", { hour12: false });
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function TrainingField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-semibold text-foreground">{label}</span>
+    <label className="flex flex-col gap-1">
+      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
       {children}
     </label>
   );
