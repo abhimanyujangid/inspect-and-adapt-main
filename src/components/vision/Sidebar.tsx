@@ -1,13 +1,11 @@
 import {
-  LayoutDashboard, AlertTriangle, Cable, Camera,
-  Aperture, Images, Brain, Boxes,
+  LayoutDashboard, AlertTriangle, UserCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type PageKey =
   | "dashboard" | "alarm"
-  | "plc" | "camera"
-  | "capture" | "gallery" | "training" | "models";
+  | "profile";
 
 type Group = {
   label: string;
@@ -23,19 +21,9 @@ const GROUPS: Group[] = [
     ],
   },
   {
-    label: "Setup",
+    label: "Configuration",
     items: [
-      { key: "plc", label: "PLC Configuration", icon: Cable },
-      { key: "camera", label: "Camera Configuration", icon: Camera },
-    ],
-  },
-  {
-    label: "Training",
-    items: [
-      { key: "capture", label: "Image Capture", icon: Aperture },
-      { key: "gallery", label: "Gallery", icon: Images },
-      { key: "training", label: "Model Training", icon: Brain },
-      { key: "models", label: "Model Manager", icon: Boxes },
+      { key: "profile", label: "Profile Overview", icon: UserCircle },
     ],
   },
 ];

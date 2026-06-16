@@ -4,12 +4,7 @@ import { TopBar } from "./TopBar";
 import { Sidebar, type PageKey } from "./Sidebar";
 import { DashboardPage } from "./pages/DashboardPage";
 import { AlarmPage } from "./pages/AlarmPage";
-import { PlcConfigPage } from "./pages/PlcConfigPage";
-import { CameraConfigPage } from "./pages/CameraConfigPage";
-import { ImageCapturePage } from "./pages/ImageCapturePage";
-import { GalleryPage } from "./pages/GalleryPage";
-import { ModelTrainingPage } from "./pages/ModelTrainingPage";
-import { ModelManagerPage } from "./pages/ModelManagerPage";
+import { ProfileOverviewPage } from "./pages/ProfileOverviewPage";
 import { NewProfileWizard } from "./NewProfileWizard";
 import { ManageProfilesDrawer } from "./ManageProfilesDrawer";
 import {
@@ -22,8 +17,6 @@ import {
 } from "@/lib/vision-storage";
 
 type WizardMode = "create" | "edit" | null;
-
-const SETUP_PAGES: PageKey[] = ["plc", "camera", "capture", "gallery", "training", "models"];
 
 export function VisionApp() {
   const [storage, setStorage] = useState<VisionStorage>(() => loadVisionStorage());
@@ -38,7 +31,6 @@ export function VisionApp() {
   const { profiles, activeProfileId } = storage;
   const activeProfile = profiles.find((p) => p.id === activeProfileId) ?? null;
   const editingProfile = profiles.find((p) => p.id === editingProfileId) ?? null;
-  const isReadOnly = !wizardOpen && activeProfile?.status === "active";
 
   const persist = useCallback((next: VisionStorage) => {
     setStorage(next);
@@ -113,38 +105,14 @@ export function VisionApp() {
     closeWizard();
   };
 
-  const profileProps = (profile: Profile) => ({
-    profile,
-    readOnly: isReadOnly,
-    onUpdate: updateProfile,
-  });
-
   const renderPage = () => {
-    if (!activeProfile && SETUP_PAGES.includes(page)) {
-      return (
-        <div className="flex h-full items-center justify-center p-8 text-sm text-muted-foreground">
-          No active profile. Create or activate a profile to view this page.
-        </div>
-      );
-    }
-
     switch (page) {
       case "dashboard":
         return <DashboardPage profile={activeProfile} />;
       case "alarm":
         return <AlarmPage />;
-      case "plc":
-        return activeProfile ? <PlcConfigPage {...profileProps(activeProfile)} /> : null;
-      case "camera":
-        return activeProfile ? <CameraConfigPage {...profileProps(activeProfile)} /> : null;
-      case "capture":
-        return activeProfile ? <ImageCapturePage {...profileProps(activeProfile)} /> : null;
-      case "gallery":
-        return activeProfile ? <GalleryPage {...profileProps(activeProfile)} /> : null;
-      case "training":
-        return activeProfile ? <ModelTrainingPage {...profileProps(activeProfile)} /> : null;
-      case "models":
-        return activeProfile ? <ModelManagerPage {...profileProps(activeProfile)} /> : null;
+      case "profile":
+        return <ProfileOverviewPage profile={activeProfile} />;
     }
   };
 
@@ -159,12 +127,7 @@ export function VisionApp() {
       />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar current={page} onNavigate={setPage} />
-        <main
-          className={cn(
-            "flex-1",
-            page === "camera" || page === "plc" || page === "models" ? "overflow-hidden" : "overflow-auto",
-          )}
-        >
+        <main className="flex-1 overflow-auto">
           {renderPage()}
         </main>
       </div>
