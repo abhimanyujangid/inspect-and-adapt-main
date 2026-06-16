@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Field, Input, Select, Btn } from "../ui";
-import { Save, Upload, Crop } from "lucide-react";
+import { Save, Upload } from "lucide-react";
 import type { CameraConfiguration, ProfilePageProps } from "@/lib/vision-storage";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +36,10 @@ export function CameraConfigPage({ profile, readOnly, onUpdate }: ProfilePagePro
   };
 
   const saveSettings = () => {
+    onUpdate({ ...profile, cameraConfiguration: draft });
+  };
+
+  const applySection = () => {
     onUpdate({ ...profile, cameraConfiguration: draft });
   };
 
@@ -110,9 +114,8 @@ export function CameraConfigPage({ profile, readOnly, onUpdate }: ProfilePagePro
               </div>
             </div>
             {!readOnly && (
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Btn variant="success"><Upload className="h-3 w-3" /> Load Image</Btn>
-                <Btn variant="danger">Trigger Camera</Btn>
+              <div className="mt-3 flex justify-end">
+                <Btn onClick={applySection}>Apply</Btn>
               </div>
             )}
           </ConfigCard>
@@ -128,9 +131,8 @@ export function CameraConfigPage({ profile, readOnly, onUpdate }: ProfilePagePro
               Area: {roiStats.area.toLocaleString()} px² — Center: ({roiStats.cx}, {roiStats.cy})
             </div>
             {!readOnly && (
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                <Btn variant="success"><Upload className="h-3 w-3" /> Load Image</Btn>
-                <Btn><Crop className="h-3 w-3" /> Apply ROI</Btn>
+              <div className="mt-3 flex justify-end">
+                <Btn onClick={applySection}>Apply</Btn>
               </div>
             )}
           </ConfigCard>
@@ -170,15 +172,18 @@ export function CameraConfigPage({ profile, readOnly, onUpdate }: ProfilePagePro
               </table>
             </div>
             {!readOnly && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Btn variant="success"><Upload className="h-3 w-3" /> Load Image</Btn>
-                <Btn variant="danger">Trigger Camera</Btn>
+              <div className="mt-3 flex justify-end">
+                <Btn onClick={applySection}>Apply</Btn>
               </div>
             )}
           </ConfigCard>
 
           {!readOnly && (
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+              <Btn variant="success">
+                <Upload className="h-3 w-3" /> Load Image
+              </Btn>
+              <Btn variant="danger">Trigger Camera</Btn>
               <Btn onClick={saveSettings}>
                 <Save className="h-3 w-3" />
                 Save Settings

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { PageHeader, Field, Input, Btn } from "../ui";
-import { Plus, Save, Plug, Unplug } from "lucide-react";
+import { Plus, Save, Plug, Unplug, Check } from "lucide-react";
 import {
   createEmptyPlcConfig,
   type PlcConfiguration,
@@ -12,6 +12,7 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
   const [draft, setDraft] = useState<PlcConfiguration>(createEmptyPlcConfig());
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
+  const [applied, setApplied] = useState(false);
   const [isNew, setIsNew] = useState(true);
 
   const configs = profile.plcConfigurations;
@@ -47,7 +48,7 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
     }));
   };
 
-  const saveSettings = () => {
+  const persistDraft = () => {
     if (isNew) {
       onUpdate({
         ...profile,
@@ -61,6 +62,16 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
         plcConfigurations: configs.map((c) => (c.id === draft.id ? draft : c)),
       });
     }
+  };
+
+  const saveSettings = () => {
+    persistDraft();
+  };
+
+  const applyPlc = () => {
+    persistDraft();
+    setApplied(true);
+    setTimeout(() => setApplied(false), 3000);
   };
 
   const disabled = readOnly;
@@ -189,6 +200,19 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
                 </Field>
               ))}
             </div>
+            {!readOnly && (
+              <div className="mt-3 flex justify-end gap-2">
+                <Btn variant="success" onClick={applyPlc}>
+                  <Check className="h-3 w-3" />
+                  Apply PLC
+                </Btn>
+              </div>
+            )}
+            {applied && (
+              <p className="mt-2 text-right text-[10px] font-bold text-success">
+                ● PLC parameters applied
+              </p>
+            )}
           </ConfigSection>
 
           {!readOnly && (
