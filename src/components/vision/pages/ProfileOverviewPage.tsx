@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import type { Profile, PlcConfiguration, CameraConfiguration, Dataset, Model } from "@/lib/vision-storage";
+import { getActivePlcConfigurations } from "@/lib/vision-storage";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui";
 
@@ -43,6 +44,9 @@ export function ProfileOverviewPage({ profile }: { profile: Profile | null }) {
     );
   }
 
+  const activePlcs = getActivePlcConfigurations(profile.plcConfigurations);
+  const totalPlcs = profile.plcConfigurations.length;
+
   return (
     <div className="flex h-full flex-col">
       {/* Header strip — maps to QFrame with border-bottom */}
@@ -75,7 +79,12 @@ export function ProfileOverviewPage({ profile }: { profile: Profile | null }) {
         <div className="mx-auto max-w-4xl space-y-3 p-5">
           {/* Quick stats row — maps to QHBoxLayout with QFrame cards */}
           <div className="grid grid-cols-4 gap-2">
-            <QuickStat label="PLC Configs" value={String(profile.plcConfigurations.length)} icon={Cable} />
+            <QuickStat
+              label="PLC Configs"
+              value={String(activePlcs.length)}
+              hint={totalPlcs > 0 ? `of ${totalPlcs} total` : undefined}
+              icon={Cable}
+            />
             <QuickStat
               label="Camera"
               value={profile.cameraConfiguration.cameraName.split(" ").slice(-1)[0]}
@@ -89,14 +98,18 @@ export function ProfileOverviewPage({ profile }: { profile: Profile | null }) {
           <CollapsibleSection
             icon={Cable}
             title="PLC Configurations"
-            count={profile.plcConfigurations.length}
+            count={activePlcs.length}
             defaultOpen
           >
-            {profile.plcConfigurations.length === 0 ? (
-              <EmptyHint>No PLC configurations set.</EmptyHint>
+            {activePlcs.length === 0 ? (
+              <EmptyHint>
+                {totalPlcs === 0
+                  ? "No PLC configurations set."
+                  : "No active PLC configuration."}
+              </EmptyHint>
             ) : (
               <div className="space-y-2">
-                {profile.plcConfigurations.map((plc) => (
+                {activePlcs.map((plc) => (
                   <PlcCard key={plc.id} plc={plc} />
                 ))}
               </div>
@@ -152,10 +165,12 @@ export function ProfileOverviewPage({ profile }: { profile: Profile | null }) {
 function QuickStat({
   label,
   value,
+  hint,
   icon: Icon,
 }: {
   label: string;
   value: string;
+  hint?: string;
   icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
@@ -164,6 +179,9 @@ function QuickStat({
       <div className="min-w-0">
         <div className="font-mono-tabular text-lg font-bold text-foreground">{value}</div>
         <div className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
+        {hint && (
+          <div className="text-[8px] text-muted-foreground">{hint}</div>
+        )}
       </div>
     </div>
   );
@@ -219,9 +237,12 @@ function EmptyHint({ children }: { children: React.ReactNode }) {
 
 function PlcCard({ plc }: { plc: PlcConfiguration }) {
   return (
-    <div className="border border-border bg-surface p-3 rounded-sm">
+    <div className="border border-success/40 bg-surface p-3 rounded-sm">
       <div className="flex items-center justify-between border-b border-border pb-2 mb-2">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-foreground">{plc.name || "Unnamed"}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-foreground">{plc.name || "Unnamed"}</span>
+          <Badge tone="success">ACTIVE</Badge>
+        </div>
         <span className="font-mono-tabular text-[11px] text-muted-foreground">{plc.ip || "No IP"}</span>
       </div>
       <div className="grid grid-cols-4 gap-x-4 gap-y-2">

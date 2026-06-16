@@ -20,6 +20,7 @@ export type PlcConfiguration = {
   slot: string;
   dbNumber: string;
   params: PlcParams;
+  active: boolean;
 };
 
 export type CameraConfiguration = {
@@ -108,7 +109,27 @@ export function createEmptyPlcConfig(): PlcConfiguration {
     slot: "1",
     dbNumber: "100",
     params: createEmptyPlcParams(),
+    active: false,
   };
+}
+
+function normalizePlcConfigurations(configs: PlcConfiguration[]): PlcConfiguration[] {
+  const normalized = configs.map((c) => ({
+    ...c,
+    active: typeof c.active === "boolean" ? c.active : false,
+  }));
+  if (normalized.length > 0 && !normalized.some((c) => c.active)) {
+    normalized[0] = { ...normalized[0], active: true };
+  }
+  return normalized;
+}
+
+export function activatePlc(configs: PlcConfiguration[], plcId: string): PlcConfiguration[] {
+  return configs.map((c) => ({ ...c, active: c.id === plcId }));
+}
+
+export function getActivePlcConfigurations(configs: PlcConfiguration[]): PlcConfiguration[] {
+  return configs.filter((c) => c.active);
 }
 
 export function createEmptyCameraConfiguration(): CameraConfiguration {
@@ -156,7 +177,10 @@ export function loadVisionStorage(): VisionStorage {
     const parsed = JSON.parse(raw) as VisionStorage;
     if (!parsed || !Array.isArray(parsed.profiles)) return emptyVisionStorage();
     return {
-      profiles: parsed.profiles,
+      profiles: parsed.profiles.map((p) => ({
+        ...p,
+        plcConfigurations: normalizePlcConfigurations(p.plcConfigurations ?? []),
+      })),
       activeProfileId: typeof parsed.activeProfileId === "string" ? parsed.activeProfileId : "",
     };
   } catch {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PageHeader, Field, Input, Btn } from "../ui";
 import { Plus, Save, Plug, Unplug, Check } from "lucide-react";
 import {
+  activatePlc,
   createEmptyPlcConfig,
   type PlcConfiguration,
   type ProfilePageProps,
@@ -49,18 +50,46 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
   };
 
   const persistDraft = () => {
+    const toSave: PlcConfiguration =
+      isNew && configs.length === 0 ? { ...draft, active: true } : draft;
+
     if (isNew) {
       onUpdate({
         ...profile,
-        plcConfigurations: [...configs, draft],
+        plcConfigurations: [...configs, toSave],
       });
-      setSelectedId(draft.id);
+      setDraft(toSave);
+      setSelectedId(toSave.id);
       setIsNew(false);
     } else {
       onUpdate({
         ...profile,
         plcConfigurations: configs.map((c) => (c.id === draft.id ? draft : c)),
       });
+    }
+  };
+
+  const handleActivatePlc = (plcId: string) => {
+    onUpdate({
+      ...profile,
+      plcConfigurations: activatePlc(configs, plcId),
+    });
+    if (draft.id === plcId) {
+      setDraft((prev) => ({ ...prev, active: true }));
+    } else {
+      setDraft((prev) => ({ ...prev, active: false }));
+    }
+  };
+
+  const handleDeactivatePlc = (plcId: string) => {
+    onUpdate({
+      ...profile,
+      plcConfigurations: configs.map((c) =>
+        c.id === plcId ? { ...c, active: false } : c,
+      ),
+    });
+    if (draft.id === plcId) {
+      setDraft((prev) => ({ ...prev, active: false }));
     }
   };
 
@@ -93,26 +122,63 @@ export function PlcConfigPage({ profile, readOnly, onUpdate }: ProfilePageProps)
 
       <div className="flex min-h-0 flex-1">
         {/* Config list sidebar — maps to QListWidget */}
-        <aside className="w-48 shrink-0 border-r border-border bg-sidebar p-2">
+        <aside className="w-56 shrink-0 border-r border-border bg-sidebar p-2">
           <div className="flex flex-col gap-1">
             {configs.map((config) => {
-              const active = config.id === selectedId && !isNew;
+              const selected = config.id === selectedId && !isNew;
               return (
-                <button
+                <div
                   key={config.id}
-                  onClick={() => selectConfig(config)}
                   className={cn(
-                    "rounded-sm px-3 py-2 text-left",
-                    active
-                      ? "border-l-2 border-primary bg-primary/10 text-primary"
-                      : "border-l-2 border-transparent text-foreground hover:bg-surface-2",
+                    "rounded-sm border-l-2 px-3 py-2",
+                    selected
+                      ? "border-primary bg-primary/10"
+                      : "border-transparent hover:bg-surface-2",
                   )}
                 >
-                  <div className="text-[11px] font-bold">{config.name || "Unnamed"}</div>
-                  <div className={cn("mt-0.5 font-mono-tabular text-[9px]", active ? "text-primary/70" : "text-muted-foreground")}>
-                    {config.ip || "No IP set"}
-                  </div>
-                </button>
+                  <button
+                    onClick={() => selectConfig(config)}
+                    className="w-full text-left"
+                  >
+                    <div className="flex items-center justify-between gap-1">
+                      <span className={cn("text-[11px] font-bold", selected ? "text-primary" : "text-foreground")}>
+                        {config.name || "Unnamed"}
+                      </span>
+                      <span
+                        className={cn(
+                          "shrink-0 rounded px-1 py-0.5 text-[8px] font-bold uppercase tracking-wider",
+                          config.active
+                            ? "bg-success/15 text-success"
+                            : "bg-muted text-muted-foreground",
+                        )}
+                      >
+                        {config.active ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                    <div className={cn("mt-0.5 font-mono-tabular text-[9px]", selected ? "text-primary/70" : "text-muted-foreground")}>
+                      {config.ip || "No IP set"}
+                    </div>
+                  </button>
+                  {!readOnly && (
+                    <div className="mt-2 flex gap-1">
+                      {!config.active ? (
+                        <button
+                          onClick={() => handleActivatePlc(config.id)}
+                          className="flex-1 rounded-sm bg-primary px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110"
+                        >
+                          Activate
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleDeactivatePlc(config.id)}
+                          className="flex-1 rounded-sm border border-border bg-surface px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground hover:bg-surface-2"
+                        >
+                          Deactivate
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               );
             })}
             {configs.length === 0 && (
