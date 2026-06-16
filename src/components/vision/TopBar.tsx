@@ -1,12 +1,15 @@
-import { Plus, Settings2, Square, Activity } from "lucide-react";
+import { Plus, Settings2, Square, Activity, Play } from "lucide-react";
 import type { Profile } from "@/lib/vision-storage";
+import type { UserRole } from "@/lib/vision-constants";
 
 type Props = {
   activeProfile: Profile | null;
   onNewProfile: () => void;
   onManageProfiles: () => void;
-  role: "Admin" | "Operator";
-  onToggleRole: () => void;
+  role: UserRole;
+  onRequestRoleChange: (role: UserRole) => void;
+  lineRunning: boolean;
+  onToggleLine: () => void;
 };
 
 export function TopBar({
@@ -14,11 +17,12 @@ export function TopBar({
   onNewProfile,
   onManageProfiles,
   role,
-  onToggleRole,
+  onRequestRoleChange,
+  lineRunning,
+  onToggleLine,
 }: Props) {
   return (
     <header className="relative z-30 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-[#e0e2e8] px-3">
-      {/* Logo / system identity */}
       <div className="flex items-center gap-2">
         <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary text-[10px] font-black text-primary-foreground">
           BV
@@ -31,16 +35,26 @@ export function TopBar({
 
       <div className="mx-1 h-6 w-px bg-border" />
 
-      {/* System controls */}
-      <button className="flex h-7 items-center gap-1.5 rounded-sm border border-destructive/50 bg-destructive/15 px-3 text-[10px] font-bold uppercase tracking-wider text-destructive hover:bg-destructive/25">
-        <Square className="h-2.5 w-2.5 fill-current" /> STOP
-      </button>
+      {lineRunning ? (
+        <button
+          onClick={onToggleLine}
+          className="flex h-7 items-center gap-1.5 rounded-sm border border-destructive/50 bg-destructive/15 px-3 text-[10px] font-bold uppercase tracking-wider text-destructive hover:bg-destructive/25"
+        >
+          <Square className="h-2.5 w-2.5 fill-current" /> STOP
+        </button>
+      ) : (
+        <button
+          onClick={onToggleLine}
+          className="flex h-7 items-center gap-1.5 rounded-sm border border-success/50 bg-success/15 px-3 text-[10px] font-bold uppercase tracking-wider text-success hover:bg-success/25"
+        >
+          <Play className="h-2.5 w-2.5 fill-current" /> START
+        </button>
+      )}
       <button className="flex h-7 items-center gap-1.5 rounded-sm border border-success/50 bg-success/15 px-3 text-[10px] font-bold uppercase tracking-wider text-success">
         <span className="h-2 w-2 rounded-full bg-success" />
         No Alarms
       </button>
 
-      {/* System status indicator */}
       <div className="flex items-center gap-1.5 px-2">
         <Activity className="h-3 w-3 text-success" />
         <span className="text-[10px] font-bold uppercase tracking-wider text-success">ONLINE</span>
@@ -48,7 +62,6 @@ export function TopBar({
 
       <div className="flex-1" />
 
-      {/* Active profile display */}
       <div className="flex items-center gap-2">
         <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Profile:</span>
         <span className="flex h-7 min-w-[180px] items-center rounded-sm border border-border bg-surface px-2 text-[11px] font-bold text-foreground font-mono-tabular">
@@ -56,28 +69,31 @@ export function TopBar({
         </span>
       </div>
 
-      <button
-        onClick={onNewProfile}
-        className="flex h-7 items-center gap-1.5 rounded-sm bg-primary px-3 text-[10px] font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110"
-      >
-        <Plus className="h-3 w-3" /> New Profile
-      </button>
+      {role === "Admin" && (
+        <>
+          <button
+            onClick={onNewProfile}
+            className="flex h-7 items-center gap-1.5 rounded-sm bg-primary px-3 text-[10px] font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110"
+          >
+            <Plus className="h-3 w-3" /> New Profile
+          </button>
 
-      <button
-        onClick={onManageProfiles}
-        className="flex h-7 items-center gap-1.5 rounded-sm border border-border bg-surface px-3 text-[10px] font-bold uppercase tracking-wider text-foreground hover:bg-surface-2"
-      >
-        <Settings2 className="h-3 w-3" /> Manage
-      </button>
+          <button
+            onClick={onManageProfiles}
+            className="flex h-7 items-center gap-1.5 rounded-sm border border-border bg-surface px-3 text-[10px] font-bold uppercase tracking-wider text-foreground hover:bg-surface-2"
+          >
+            <Settings2 className="h-3 w-3" /> Manage
+          </button>
+        </>
+      )}
 
       <div className="ml-1 h-6 w-px bg-border" />
 
-      {/* Role toggle — maps to QButtonGroup in PySide6 */}
       <div className="flex items-center gap-1">
         <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Role:</span>
         <div className="flex h-7 rounded-sm border border-border bg-surface">
           <button
-            onClick={() => role !== "Admin" && onToggleRole()}
+            onClick={() => onRequestRoleChange("Admin")}
             className={`rounded-sm px-3 text-[10px] font-bold uppercase tracking-wider ${
               role === "Admin" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
@@ -85,7 +101,7 @@ export function TopBar({
             Admin
           </button>
           <button
-            onClick={() => role !== "Operator" && onToggleRole()}
+            onClick={() => onRequestRoleChange("Operator")}
             className={`rounded-sm px-3 text-[10px] font-bold uppercase tracking-wider ${
               role === "Operator" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             }`}

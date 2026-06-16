@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 import { TopBar } from "./TopBar";
 import { Sidebar, type PageKey } from "./Sidebar";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -7,6 +6,8 @@ import { AlarmPage } from "./pages/AlarmPage";
 import { ProfileOverviewPage } from "./pages/ProfileOverviewPage";
 import { NewProfileWizard } from "./NewProfileWizard";
 import { ManageProfilesDrawer } from "./ManageProfilesDrawer";
+import { RolePasswordModal } from "./RolePasswordModal";
+import type { UserRole } from "@/lib/vision-constants";
 import {
   activateProfile,
   finishProfile,
@@ -25,7 +26,9 @@ export function VisionApp() {
   const [wizardMode, setWizardMode] = useState<WizardMode>(null);
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [manageOpen, setManageOpen] = useState(false);
-  const [role, setRole] = useState<"Admin" | "Operator">("Admin");
+  const [role, setRole] = useState<UserRole>("Admin");
+  const [pendingRole, setPendingRole] = useState<UserRole | null>(null);
+  const [lineRunning, setLineRunning] = useState(true);
   const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { profiles, activeProfileId } = storage;
@@ -54,10 +57,26 @@ export function VisionApp() {
     [storage, persist],
   );
 
+  const requestRoleChange = (next: UserRole) => {
+    if (next === role) return;
+    setPendingRole(next);
+  };
+
+  const confirmRoleChange = () => {
+    if (pendingRole) setRole(pendingRole);
+    setPendingRole(null);
+  };
+
   const openCreateWizard = () => {
+    if (role !== "Admin") return;
     setWizardMode("create");
     setEditingProfileId(null);
     setWizardOpen(true);
+  };
+
+  const openManageProfiles = () => {
+    if (role !== "Admin") return;
+    setManageOpen(true);
   };
 
   const openEditWizard = (profileId: string) => {
@@ -121,9 +140,11 @@ export function VisionApp() {
       <TopBar
         activeProfile={activeProfile}
         onNewProfile={openCreateWizard}
-        onManageProfiles={() => setManageOpen(true)}
+        onManageProfiles={openManageProfiles}
         role={role}
-        onToggleRole={() => setRole((r) => (r === "Admin" ? "Operator" : "Admin"))}
+        onRequestRoleChange={requestRoleChange}
+        lineRunning={lineRunning}
+        onToggleLine={() => setLineRunning((r) => !r)}
       />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar current={page} onNavigate={setPage} />
@@ -152,7 +173,17 @@ export function VisionApp() {
         onActivate={handleActivate}
         onEdit={openEditWizard}
         onDelete={handleDelete}
+        readOnly={role === "Operator"}
       />
+
+      {pendingRole && (
+        <RolePasswordModal
+          open={pendingRole !== null}
+          targetRole={pendingRole}
+          onSuccess={confirmRoleChange}
+          onCancel={() => setPendingRole(null)}
+        />
+      )}
     </div>
   );
 }

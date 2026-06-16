@@ -13,6 +13,7 @@ export function ManageProfilesDrawer({
   onActivate,
   onEdit,
   onDelete,
+  readOnly,
 }: {
   open: boolean;
   onClose: () => void;
@@ -21,6 +22,7 @@ export function ManageProfilesDrawer({
   onActivate: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
+  readOnly?: boolean;
 }) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -106,19 +108,21 @@ export function ManageProfilesDrawer({
                       {p.createdAt.slice(0, 10)}
                     </td>
                     <td className="py-2.5 text-right">
-                      <div className="flex justify-end gap-1">
-                        {!isActive && (
-                          <Btn variant="outline" className="h-6 px-2" onClick={() => onActivate(p.id)}>
-                            Activate
-                          </Btn>
-                        )}
-                        <IconBtn title="Edit" onClick={() => onEdit(p.id)}>
-                          <Edit className="h-3 w-3" />
-                        </IconBtn>
-                        <IconBtn title="Delete" danger onClick={() => setDeleteId(p.id)}>
-                          <Trash2 className="h-3 w-3" />
-                        </IconBtn>
-                      </div>
+                      {!readOnly && (
+                        <div className="flex justify-end gap-1">
+                          {!isActive && (
+                            <Btn variant="outline" className="h-6 px-2" onClick={() => onActivate(p.id)}>
+                              Activate
+                            </Btn>
+                          )}
+                          <IconBtn title="Edit" onClick={() => onEdit(p.id)}>
+                            <Edit className="h-3 w-3" />
+                          </IconBtn>
+                          <IconBtn title="Delete" danger onClick={() => setDeleteId(p.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </IconBtn>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 );
@@ -134,7 +138,7 @@ export function ManageProfilesDrawer({
 
         <footer className="flex h-10 shrink-0 items-center justify-between border-t border-border px-4">
           <span className="text-[9px] uppercase tracking-wider text-muted-foreground">
-            Edit to reopen wizard · Activate to switch profile
+            {readOnly ? "View only — operator mode" : "Edit to reopen wizard · Activate to switch profile"}
           </span>
           <Btn variant="outline" onClick={onClose}>Close</Btn>
         </footer>
