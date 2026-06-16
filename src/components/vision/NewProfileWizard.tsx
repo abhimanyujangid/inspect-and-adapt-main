@@ -88,7 +88,7 @@ export function NewProfileWizard({
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background">
       {/* Wizard header — maps to QToolBar */}
-      <div className="flex h-10 shrink-0 items-center justify-between border-b-2 border-primary bg-[#14171c] px-4">
+      <div className="flex h-10 shrink-0 items-center justify-between border-b-2 border-primary bg-[#e0e2e8] px-4">
         <div className="flex items-center gap-3">
           <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary text-[9px] font-black text-primary-foreground">
             {step + 1}
@@ -158,7 +158,7 @@ export function NewProfileWizard({
       </div>
 
       {/* Footer toolbar — maps to QDialogButtonBox */}
-      <div className="flex h-10 shrink-0 items-center justify-between border-t border-border bg-[#14171c] px-4">
+      <div className="flex h-10 shrink-0 items-center justify-between border-t border-border bg-[#e0e2e8] px-4">
         <Btn variant="outline" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
           <ChevronLeft className="h-3 w-3" /> Back
         </Btn>

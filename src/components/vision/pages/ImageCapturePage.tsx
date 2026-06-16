@@ -82,7 +82,7 @@ export function ImageCapturePage({ profile, readOnly, onUpdate }: ProfilePagePro
               <span>Live Preview</span>
               <span className="font-mono-tabular">Dataset: {selectedDataset?.name ?? "—"}</span>
             </div>
-            <div className="flex h-[400px] items-center justify-center bg-[#111318] grid-bg">
+            <div className="flex h-[400px] items-center justify-center bg-[#e8eaee] grid-bg">
               {previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="max-h-full max-w-full object-contain" />
               ) : (

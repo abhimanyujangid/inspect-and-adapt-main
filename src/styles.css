@@ -58,70 +58,70 @@
   --font-mono: "JetBrains Mono", "Consolas", "SF Mono", ui-monospace, monospace;
 }
 
-/* ─── Dark industrial palette ──────────────────────────────────── */
+/* ─── Light grey & white palette ───────────────────────────────── */
 :root {
   --radius: 3px;
 
-  /* Charcoal / dark navy background stack */
-  --background: #1a1d23;
-  --foreground: #e0e4ea;
+  /* Clean white / light grey background stack */
+  --background: #f5f6f8;
+  --foreground: #1e2028;
 
-  --surface: #22262e;
-  --surface-2: #2a2f38;
+  --surface: #eceef2;
+  --surface-2: #e3e5eb;
 
-  --card: #22262e;
-  --card-foreground: #e0e4ea;
-  --popover: #22262e;
-  --popover-foreground: #e0e4ea;
+  --card: #ffffff;
+  --card-foreground: #1e2028;
+  --popover: #ffffff;
+  --popover-foreground: #1e2028;
 
   /* Teal accent — common in industrial HMIs */
-  --primary: #0ea5e9;
+  --primary: #0284c7;
   --primary-foreground: #ffffff;
 
-  --secondary: #2a2f38;
-  --secondary-foreground: #c0c8d4;
+  --secondary: #e3e5eb;
+  --secondary-foreground: #3a3f4b;
 
-  --muted: #2a2f38;
-  --muted-foreground: #7a8494;
+  --muted: #e3e5eb;
+  --muted-foreground: #6b7280;
 
-  --accent: #1e3a5f;
-  --accent-foreground: #e0e4ea;
+  --accent: #dbeafe;
+  --accent-foreground: #1e2028;
 
   /* Status colors — ANSI / industrial standard */
-  --destructive: #ef4444;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
-  --success: #22c55e;
+  --success: #16a34a;
   --success-foreground: #ffffff;
 
-  --warning: #f59e0b;
-  --warning-foreground: #1a1d23;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
 
-  /* Borders — visible on dark bg */
-  --border: #333842;
-  --border-strong: #464d5a;
-  --input: #2a2f38;
-  --ring: #0ea5e9;
+  /* Borders — subtle on light bg */
+  --border: #d1d5db;
+  --border-strong: #9ca3af;
+  --input: #f0f1f4;
+  --ring: #0284c7;
 
   /* Sidebar */
-  --sidebar: #181b20;
-  --sidebar-foreground: #e0e4ea;
-  --sidebar-accent: #1e3a5f;
-  --sidebar-accent-foreground: #0ea5e9;
-  --sidebar-border: #2a2f38;
+  --sidebar: #eaecf0;
+  --sidebar-foreground: #1e2028;
+  --sidebar-accent: #dbeafe;
+  --sidebar-accent-foreground: #0284c7;
+  --sidebar-border: #d1d5db;
 
   /* Charts */
-  --chart-1: #0ea5e9;
-  --chart-2: #22c55e;
-  --chart-3: #f59e0b;
-  --chart-4: #ef4444;
-  --chart-5: #a855f7;
+  --chart-1: #0284c7;
+  --chart-2: #16a34a;
+  --chart-3: #d97706;
+  --chart-4: #dc2626;
+  --chart-5: #9333ea;
 }
 
 .dark {
-  /* Already dark by default — same values */
-  --background: #1a1d23;
-  --foreground: #e0e4ea;
+  /* Override to light — no dark mode */
+  --background: #f5f6f8;
+  --foreground: #1e2028;
 }
 
 @layer base {
@@ -175,8 +175,8 @@
   /* Grid background for camera / viewport areas */
   .grid-bg {
     background-image:
-      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
@@ -187,7 +187,7 @@
 
   /* Industrial toolbar header stripe */
   .toolbar-header {
-    background: #181b20;
+    background: #e0e2e8;
     border-bottom: 1px solid var(--color-border);
     padding: 8px 16px;
   }

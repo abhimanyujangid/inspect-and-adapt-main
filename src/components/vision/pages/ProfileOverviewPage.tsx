@@ -335,7 +335,7 @@ function DatasetRow({ ds }: { ds: Dataset }) {
       {ds.images.length > 0 && (
         <div className="flex gap-1">
           {ds.images.slice(0, 4).map((img) => (
-            <div key={img.id} className="h-7 w-7 overflow-hidden border border-border bg-[#111318] rounded-sm">
+            <div key={img.id} className="h-7 w-7 overflow-hidden border border-border bg-[#e8eaee] rounded-sm">
               <img src={img.dataUrl} alt={img.name} className="h-full w-full object-cover" />
             </div>
           ))}

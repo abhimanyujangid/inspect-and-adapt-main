@@ -77,7 +77,7 @@ export function CameraConfigPage({ profile, readOnly, onUpdate }: ProfilePagePro
               </div>
               <span className="font-mono-tabular">{draft.fps} FPS</span>
             </div>
-            <div className="aspect-[4/3] bg-[#111318] grid-bg" />
+            <div className="aspect-[4/3] bg-[#e8eaee] grid-bg" />
           </div>
         </div>
 

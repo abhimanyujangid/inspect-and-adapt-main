@@ -17,7 +17,7 @@ export function TopBar({
   onToggleRole,
 }: Props) {
   return (
-    <header className="relative z-30 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-[#14171c] px-3">
+    <header className="relative z-30 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-[#e0e2e8] px-3">
       {/* Logo / system identity */}
       <div className="flex items-center gap-2">
         <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary text-[10px] font-black text-primary-foreground">

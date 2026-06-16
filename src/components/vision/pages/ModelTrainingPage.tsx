@@ -128,7 +128,7 @@ export function ModelTrainingPage({ profile, readOnly, onUpdate }: ProfilePagePr
             <div>
               <div className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">Activity Log</div>
               {/* Log area — maps to QTextEdit (readOnly) */}
-              <div className="min-h-[300px] border border-border bg-[#111318] p-3 rounded-sm font-mono-tabular">
+              <div className="min-h-[300px] border border-border bg-[#e8eaee] p-3 rounded-sm font-mono-tabular">
                 <div className="flex flex-col gap-2">
                   {logs.length === 0 && (
                     <p className="text-[10px] text-muted-foreground">No activity yet.</p>

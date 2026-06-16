@@ -99,7 +99,7 @@ export function GalleryPage({ profile, readOnly, onUpdate }: ProfilePageProps) {
                 onClick={() => toggle(img.id)}
                 className="overflow-hidden border border-border bg-card text-left rounded-sm hover:border-primary"
               >
-                <div className="relative flex h-36 items-center justify-center bg-[#111318]">
+                <div className="relative flex h-36 items-center justify-center bg-[#e8eaee]">
                   <img src={img.dataUrl} alt={img.name} className="h-full w-full object-cover" />
                   {!readOnly && (
                     <div className={cn(

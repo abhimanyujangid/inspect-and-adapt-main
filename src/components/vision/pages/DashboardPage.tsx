@@ -84,7 +84,7 @@ function StatusCard({ label, value, status }: { label: string; value: string; st
 function CameraTile({ n }: { n: number }) {
   return (
     <div className="overflow-hidden border border-border bg-card rounded-sm">
-      <div className="flex h-56 items-center justify-center bg-[#111318] grid-bg text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+      <div className="flex h-56 items-center justify-center bg-[#e8eaee] grid-bg text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
         Camera {n} — No Feed
       </div>
       <div className="flex items-center justify-between border-t border-border bg-surface-2 px-3 py-2">
