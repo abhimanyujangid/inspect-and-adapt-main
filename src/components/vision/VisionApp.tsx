@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { TopBar } from "./TopBar";
 import { Sidebar, type PageKey } from "./Sidebar";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -148,7 +149,7 @@ export function VisionApp() {
       />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar current={page} onNavigate={setPage} />
-        <main className="flex-1 overflow-auto">
+        <main className={cn("flex-1 min-h-0", page === "dashboard" ? "overflow-hidden" : "overflow-auto")}>
           {renderPage()}
         </main>
       </div>
