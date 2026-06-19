@@ -16,6 +16,8 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
+  CARGO_NET_RETRY: 10
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
 
 jobs:
   build-linux:
@@ -56,12 +58,37 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
+          cache-all-crates: true
 
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Fetch Rust crates
+        working-directory: src-tauri
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5; do
+            echo "cargo fetch attempt ${attempt}..."
+            if cargo fetch --locked; then
+              exit 0
+            fi
+            echo "cargo fetch failed, retrying in 15s..."
+            sleep 15
+          done
+          exit 1
+
       - name: Build Tauri app (Linux)
-        run: npm run tauri:build
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            echo "tauri build attempt ${attempt}..."
+            if npm run tauri:build; then
+              exit 0
+            fi
+            echo "tauri build failed, retrying in 30s..."
+            sleep 30
+          done
+          exit 1
 
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
