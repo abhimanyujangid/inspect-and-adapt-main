@@ -1,11 +1,7 @@
-import {
-  LayoutDashboard, AlertTriangle, UserCircle,
-} from "lucide-react";
+import { LayoutDashboard, AlertTriangle, UserCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type PageKey =
-  | "dashboard" | "alarm"
-  | "profile";
+export type PageKey = "dashboard" | "alarm" | "profile";
 
 type Group = {
   label: string;
@@ -22,13 +18,17 @@ const GROUPS: Group[] = [
   },
   {
     label: "Configuration",
-    items: [
-      { key: "profile", label: "Profile Overview", icon: UserCircle },
-    ],
+    items: [{ key: "profile", label: "Profile Overview", icon: UserCircle }],
   },
 ];
 
-export function Sidebar({ current, onNavigate }: { current: PageKey; onNavigate: (k: PageKey) => void }) {
+export function Sidebar({
+  current,
+  onNavigate,
+}: {
+  current: PageKey;
+  onNavigate: (k: PageKey) => void;
+}) {
   return (
     <aside className="flex w-52 shrink-0 flex-col border-r border-border bg-sidebar">
       <nav className="flex-1 overflow-y-auto py-3">
@@ -52,11 +52,14 @@ export function Sidebar({ current, onNavigate }: { current: PageKey; onNavigate:
                         : "border-l-2 border-transparent text-muted-foreground hover:bg-surface-2 hover:text-foreground",
                     )}
                   >
-                    <it.icon className={cn("h-3.5 w-3.5", active ? "text-primary" : "text-muted-foreground")} />
+                    <it.icon
+                      className={cn(
+                        "h-3.5 w-3.5",
+                        active ? "text-primary" : "text-muted-foreground",
+                      )}
+                    />
                     <span className="flex-1 truncate">{it.label}</span>
-                    {active && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    )}
+                    {active && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
                   </button>
                 );
               })}
@@ -69,7 +72,9 @@ export function Sidebar({ current, onNavigate }: { current: PageKey; onNavigate:
       <div className="border-t border-border px-4 py-2">
         <div className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-success" />
-          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">System Ready</span>
+          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+            System Ready
+          </span>
         </div>
       </div>
     </aside>

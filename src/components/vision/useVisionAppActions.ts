@@ -1,10 +1,6 @@
 import { useState } from "react";
 import type { UserRole } from "@/lib/vision-constants";
-import {
-  activateProfile,
-  finishProfile,
-  type VisionStorage,
-} from "@/lib/vision-storage";
+import { activateProfile, finishProfile, type VisionStorage } from "@/lib/vision-storage";
 
 type WizardMode = "create" | "edit" | null;
 

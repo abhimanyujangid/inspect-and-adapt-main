@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HISTORY_IMAGE_COUNT, HISTORY_IMAGES } from "@/lib/vision-mock-data";
 function NavBtn({
@@ -50,7 +45,9 @@ export function OutputHistoryPanel() {
         </span>
         <div className="flex items-center gap-3 font-mono-tabular text-[10px]">
           <span className="text-muted-foreground">{image.time}</span>
-          <span className={cn("font-bold uppercase", image.pass ? "text-success" : "text-destructive")}>
+          <span
+            className={cn("font-bold uppercase", image.pass ? "text-success" : "text-destructive")}
+          >
             {image.pass ? "Pass" : "Fail"}
           </span>
           <span className="text-muted-foreground">Score {image.score}</span>
@@ -75,7 +72,11 @@ export function OutputHistoryPanel() {
             <NavBtn label="First" disabled={atStart} onClick={() => setIndex(0)}>
               <ChevronsLeft className="h-3 w-3" />
             </NavBtn>
-            <NavBtn label="Prev" disabled={atStart} onClick={() => setIndex((i) => Math.max(0, i - 1))}>
+            <NavBtn
+              label="Prev"
+              disabled={atStart}
+              onClick={() => setIndex((i) => Math.max(0, i - 1))}
+            >
               <ChevronLeft className="h-3 w-3" />
             </NavBtn>
           </div>

@@ -10,7 +10,9 @@ export function CapturedImagesGrid({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <div className="text-[11px] font-bold uppercase tracking-wider text-primary">Captured Images</div>
+        <div className="text-[11px] font-bold uppercase tracking-wider text-primary">
+          Captured Images
+        </div>
         <span className="font-mono-tabular text-[10px] text-muted-foreground">
           {selectedDataset
             ? `${selectedDataset.name} · ${capturedImages.length} images`

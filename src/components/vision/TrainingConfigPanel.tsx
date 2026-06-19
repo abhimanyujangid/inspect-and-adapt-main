@@ -32,10 +32,18 @@ export function TrainingConfigPanel({
       <div className="rounded-sm border border-border bg-card p-4">
         <div className="grid grid-cols-2 gap-3">
           <Field label="Training Label">
-            <Input value={label} onChange={(e) => onLabelChange(e.target.value)} disabled={readOnly} />
+            <Input
+              value={label}
+              onChange={(e) => onLabelChange(e.target.value)}
+              disabled={readOnly}
+            />
           </Field>
           <Field label="Datasets">
-            <Select value={datasetId} onChange={(e) => onDatasetChange(e.target.value)} disabled={readOnly}>
+            <Select
+              value={datasetId}
+              onChange={(e) => onDatasetChange(e.target.value)}
+              disabled={readOnly}
+            >
               {datasets.length === 0 && <option value="">No datasets</option>}
               {datasets.map((d) => (
                 <option key={d.id} value={d.id}>

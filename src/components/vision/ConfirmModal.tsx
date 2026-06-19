@@ -39,7 +39,9 @@ export function ConfirmModal({
         <div className="p-4">
           <p className="text-[11px] text-muted-foreground">{message}</p>
           <div className="mt-4 flex justify-end gap-2">
-            <Btn variant="outline" onClick={onCancel}>Cancel</Btn>
+            <Btn variant="outline" onClick={onCancel}>
+              Cancel
+            </Btn>
             <Btn variant={danger ? "danger" : "primary"} onClick={onConfirm}>
               {confirmLabel}
             </Btn>

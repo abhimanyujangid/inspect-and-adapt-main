@@ -19,7 +19,11 @@ export function CameraHsvPanel({
   return (
     <ConfigSectionPanel title="Pre Processing">
       <Field label="Cap Type">
-        <Select value={draft.capType} onChange={(e) => onSet("capType", e.target.value)} disabled={readOnly}>
+        <Select
+          value={draft.capType}
+          onChange={(e) => onSet("capType", e.target.value)}
+          disabled={readOnly}
+        >
           <option>Bally Blue Caps</option>
           <option>Red Caps Line B</option>
           <option>Standard Bottle Cap</option>

@@ -15,6 +15,7 @@ package names/versions for Linux distros especially can drift).
 Varies by distro. Install the dev/build packages below, then proceed to Rust.
 
 **Debian/Ubuntu:**
+
 ```bash
 sudo apt update
 sudo apt install libwebkit2gtk-4.1-dev \
@@ -29,6 +30,7 @@ sudo apt install libwebkit2gtk-4.1-dev \
 ```
 
 **Arch:**
+
 ```bash
 sudo pacman -S --needed \
   webkit2gtk-4.1 \
@@ -44,6 +46,7 @@ sudo pacman -S --needed \
 ```
 
 **Fedora:**
+
 ```bash
 sudo dnf install webkit2gtk4.1-devel \
   openssl-devel \
@@ -57,6 +60,7 @@ sudo dnf group install "c-development"
 ```
 
 **openSUSE:**
+
 ```bash
 sudo zypper in webkit2gtk3-devel \
   libopenssl-devel \
@@ -69,6 +73,7 @@ sudo zypper in -t pattern devel_basis
 ```
 
 **Alpine:**
+
 ```bash
 build-base \
   webkit2gtk-4.1-dev \
@@ -79,6 +84,7 @@ build-base \
   libayatana-appindicator-dev \
   librsvg
 ```
+
 Note: Alpine containers ship no fonts by default — install at least one font package (e.g.
 `font-dejavu`) or text won't render in the app.
 

@@ -52,16 +52,10 @@ export function GallerySelectionBar({
       {!readOnly && imageCount > 0 && (
         <div className="mt-4 flex items-center justify-between border-b border-border pb-2">
           <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider">
-            <button
-              onClick={onSelectAll}
-              className="text-primary underline underline-offset-2"
-            >
+            <button onClick={onSelectAll} className="text-primary underline underline-offset-2">
               Select All
             </button>
-            <button
-              onClick={onDeselectAll}
-              className="text-primary underline underline-offset-2"
-            >
+            <button onClick={onDeselectAll} className="text-primary underline underline-offset-2">
               Deselect All
             </button>
           </div>

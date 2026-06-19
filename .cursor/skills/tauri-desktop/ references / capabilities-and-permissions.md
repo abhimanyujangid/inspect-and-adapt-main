@@ -120,6 +120,7 @@ A capability can be restricted to a subset of `linux`, `macOS`, `windows`, `iOS`
   "permissions": ["global-shortcut:allow-register"]
 }
 ```
+
 ```json
 // mobile-only capability
 {
@@ -156,11 +157,13 @@ tradeoff if a user wants it.
 ## What capabilities do and don't protect against
 
 **Do protect against:**
+
 - Limiting blast radius if the frontend is compromised (XSS, supply-chain JS dependency, etc.)
 - Preventing accidental exposure of local system interfaces/data
 - Reducing privilege escalation from frontend to backend/system
 
 **Do NOT protect against** (i.e. don't oversell this to a user as a security boundary for these):
+
 - Malicious or insecure Rust code — capabilities don't review your Rust logic
 - Overly permissive scopes/configuration — granting `fs:allow-read-text-file` to `*` paths is still
   a self-inflicted hole

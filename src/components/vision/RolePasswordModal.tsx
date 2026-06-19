@@ -51,7 +51,8 @@ export function RolePasswordModal({
         </div>
         <div className="p-4">
           <p className="text-[11px] text-muted-foreground">
-            Enter password to switch role to <span className="font-bold text-foreground">{targetRole}</span>.
+            Enter password to switch role to{" "}
+            <span className="font-bold text-foreground">{targetRole}</span>.
           </p>
           <div className="mt-4">
             <Field label="Password">
@@ -66,12 +67,12 @@ export function RolePasswordModal({
                 autoFocus
               />
             </Field>
-            {error && (
-              <p className="mt-2 text-[10px] font-bold text-destructive">{error}</p>
-            )}
+            {error && <p className="mt-2 text-[10px] font-bold text-destructive">{error}</p>}
           </div>
           <div className="mt-4 flex justify-end gap-2">
-            <Btn variant="outline" onClick={onCancel}>Cancel</Btn>
+            <Btn variant="outline" onClick={onCancel}>
+              Cancel
+            </Btn>
             <Btn onClick={handleVerify}>Verify</Btn>
           </div>
         </div>

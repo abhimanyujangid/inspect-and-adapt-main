@@ -20,7 +20,9 @@ export function CreateDatasetModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="w-full max-w-sm rounded-sm border border-border bg-card">
         <div className="flex items-center justify-between border-b-2 border-primary bg-surface-2 px-4 py-2.5">
-          <h2 className="text-[11px] font-bold uppercase tracking-wider text-primary">Create Dataset</h2>
+          <h2 className="text-[11px] font-bold uppercase tracking-wider text-primary">
+            Create Dataset
+          </h2>
           <button
             onClick={onClose}
             className="rounded-sm p-1 text-muted-foreground hover:bg-surface hover:text-foreground"

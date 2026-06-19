@@ -23,7 +23,12 @@ export function ProfileOverviewPage({ profile }: { profile: Profile | null }) {
         <div className="mx-auto max-w-4xl space-y-3 p-5">
           <ProfileQuickStatsPanel profile={profile} />
 
-          <CollapsibleSection icon={Cable} title="PLC Configurations" count={activePlcs.length} defaultOpen>
+          <CollapsibleSection
+            icon={Cable}
+            title="PLC Configurations"
+            count={activePlcs.length}
+            defaultOpen
+          >
             {activePlcs.length === 0 ? (
               <SectionEmptyHint>
                 {totalPlcs === 0 ? "No PLC configurations set." : "No active PLC configuration."}
@@ -41,7 +46,11 @@ export function ProfileOverviewPage({ profile }: { profile: Profile | null }) {
             <CameraOverviewCard cam={profile.cameraConfiguration} />
           </CollapsibleSection>
 
-          <CollapsibleSection icon={Images} title="Datasets & Gallery" count={profile.datasets.length}>
+          <CollapsibleSection
+            icon={Images}
+            title="Datasets & Gallery"
+            count={profile.datasets.length}
+          >
             {profile.datasets.length === 0 ? (
               <SectionEmptyHint>No datasets created yet.</SectionEmptyHint>
             ) : (

@@ -25,12 +25,13 @@ in `generate_handler!`, call `invoke()` from JS — and get a runtime error anyw
 capabilities/permissions layer on top of the command registry. A command can be perfectly registered
 in Rust and still be unreachable from the frontend if no capability grants it. This trips people up
 because Tauri 1.x didn't have this step, and a lot of tutorials/LLM training data still reflect the
-1.x model. Whenever you scaffold a command for someone, do both halves — the Rust registration *and*
+1.x model. Whenever you scaffold a command for someone, do both halves — the Rust registration _and_
 the capability entry — rather than just the Rust side and hoping they figure out the rest.
 
 ## Step 1: Figure out what they actually need
 
 Before running anything, work out:
+
 - **New project or existing frontend?** `create-tauri-app` scaffolds both halves (frontend + Rust) from
   a template. `tauri init` only adds the `src-tauri/` backend to a frontend that already exists.
 - **Which frontend stack** (vanilla JS, React, Vue, Svelte, SolidJS, Angular, Preact, Leptos, Yew,
@@ -173,8 +174,8 @@ others registered, add it to the existing `generate_handler![...]` list, don't i
 **Frontend side:**
 
 ```js
-import { invoke } from '@tauri-apps/api/core';
-const result = await invoke('greet', { name: 'World' });
+import { invoke } from "@tauri-apps/api/core";
+const result = await invoke("greet", { name: "World" });
 ```
 
 Argument keys are camelCase on the JS side by default even if the Rust parameter is snake_case
@@ -187,7 +188,7 @@ than waiting for the user to hit the error and come back confused.
 ## Step 6: Grant the permission (capabilities)
 
 By default, a command you write and register yourself is allowed for all windows — no extra step is
-needed for *your own* commands; the capabilities system mainly gates *plugin* commands. But Tauri's
+needed for _your own_ commands; the capabilities system mainly gates _plugin_ commands. But Tauri's
 default capability file in scaffolded projects only lists specific built-in permissions, and remember:
 plugins (filesystem, dialog, shell, http, store, etc.) each ship their own commands that **do** need
 explicit grants in `src-tauri/capabilities/default.json`.
@@ -200,11 +201,7 @@ the capability file needs an entry, e.g.:
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "main-capability",
   "windows": ["main"],
-  "permissions": [
-    "core:default",
-    "fs:default",
-    "fs:allow-read-text-file"
-  ]
+  "permissions": ["core:default", "fs:default", "fs:allow-read-text-file"]
 }
 ```
 

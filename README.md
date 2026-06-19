@@ -19,12 +19,12 @@ Profile data is stored locally in the browser WebView (`localStorage`). PLC, cam
 
 ## Tech stack
 
-| Layer | Stack |
-|-------|-------|
-| Desktop shell | [Tauri v2](https://v2.tauri.app/) (Rust) |
-| Frontend | React 19, TanStack Router, TanStack Start (SPA mode) |
-| Styling | Tailwind CSS v4 |
-| Build | Vite 7, Nitro |
+| Layer         | Stack                                                |
+| ------------- | ---------------------------------------------------- |
+| Desktop shell | [Tauri v2](https://v2.tauri.app/) (Rust)             |
+| Frontend      | React 19, TanStack Router, TanStack Start (SPA mode) |
+| Styling       | Tailwind CSS v4                                      |
+| Build         | Vite 7, Nitro                                        |
 
 ## Prerequisites
 
@@ -85,12 +85,12 @@ src-tauri/target/release/bundle/dmg/VisionOps_0.1.0_aarch64.dmg
 
 ## Other scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run build` | Build frontend only (output: `.output/public/`) |
-| `npm run preview` | Preview the production frontend build |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format code with Prettier |
+| Command           | Description                                     |
+| ----------------- | ----------------------------------------------- |
+| `npm run build`   | Build frontend only (output: `.output/public/`) |
+| `npm run preview` | Preview the production frontend build           |
+| `npm run lint`    | Run ESLint                                      |
+| `npm run format`  | Format code with Prettier                       |
 
 ## Project layout
 

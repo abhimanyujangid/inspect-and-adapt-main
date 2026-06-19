@@ -28,9 +28,7 @@ export function GalleryPage({ profile, readOnly, onUpdate }: ProfilePageProps) {
     onUpdate({
       ...profile,
       datasets: datasets.map((d) =>
-        d.id === datasetId
-          ? { ...d, images: d.images.filter((img) => !selected.has(img.id)) }
-          : d,
+        d.id === datasetId ? { ...d, images: d.images.filter((img) => !selected.has(img.id)) } : d,
       ),
     });
     setSelected(new Set());

@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  createId,
-  mockCaptureDataUrl,
-  type Profile,
-} from "@/lib/vision-storage";
+import { createId, mockCaptureDataUrl, type Profile } from "@/lib/vision-storage";
 
 export const CAPTURE_CAMERA_OPTIONS = ["Camera 1", "Camera 2"];
 

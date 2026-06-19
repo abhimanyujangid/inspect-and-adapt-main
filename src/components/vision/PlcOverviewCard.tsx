@@ -29,11 +29,7 @@ export function PlcOverviewCard({ plc }: { plc: PlcConfiguration }) {
         </div>
         <div className="grid grid-cols-3 gap-x-4 gap-y-2">
           {(Object.keys(plc.params) as (keyof typeof plc.params)[]).map((key) => (
-            <ReadOnlyField
-              key={key}
-              label={PLC_PARAM_LABELS[key] ?? key}
-              value={plc.params[key]}
-            />
+            <ReadOnlyField key={key} label={PLC_PARAM_LABELS[key] ?? key} value={plc.params[key]} />
           ))}
         </div>
       </div>

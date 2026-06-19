@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { WIZARD_STEPS } from "@/lib/vision-wizard-steps";
-import {
-  createEmptyProfile,
-  type Profile,
-  type VisionStorage,
-} from "@/lib/vision-storage";
+import { createEmptyProfile, type Profile, type VisionStorage } from "@/lib/vision-storage";
 import { CameraConfigPage } from "./pages/CameraConfigPage";
 import { GalleryPage } from "./pages/GalleryPage";
 import { ImageCapturePage } from "./pages/ImageCapturePage";
@@ -65,9 +61,7 @@ export function NewProfileWizard({
     setStep((s) => Math.min(s + 1, WIZARD_STEPS.length - 1));
   };
 
-  const pageProps = profile
-    ? { profile, readOnly: false as const, onUpdate: updateProfile }
-    : null;
+  const pageProps = profile ? { profile, readOnly: false as const, onUpdate: updateProfile } : null;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background">
@@ -79,7 +73,8 @@ export function NewProfileWizard({
           </div>
           <div className="leading-none">
             <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-              {mode === "edit" ? "Edit Profile" : "New Profile"} · Step {step + 1}/{WIZARD_STEPS.length}
+              {mode === "edit" ? "Edit Profile" : "New Profile"} · Step {step + 1}/
+              {WIZARD_STEPS.length}
             </span>
             <span className="ml-2 text-[11px] font-bold uppercase tracking-wider text-primary">
               {WIZARD_STEPS[step].label}

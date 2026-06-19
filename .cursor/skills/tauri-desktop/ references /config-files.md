@@ -26,9 +26,7 @@ Shape (JSON example):
     "icon": ["icons/app.png"]
   },
   "app": {
-    "windows": [
-      { "title": "MyApp" }
-    ],
+    "windows": [{ "title": "MyApp" }],
     "security": {
       "capabilities": ["main-capability"]
     }
@@ -43,6 +41,7 @@ Shape (JSON example):
 ```
 
 Fields people touch most when scaffolding:
+
 - `build.devUrl` — where the dev server is running (e.g. Vite's `http://localhost:5173`)
 - `build.beforeDevCommand` / `build.beforeBuildCommand` — shell commands run before `tauri dev` /
   `tauri build` kick in, typically `"npm run dev"` / `"npm run build"`

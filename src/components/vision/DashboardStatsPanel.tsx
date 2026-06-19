@@ -10,7 +10,9 @@ function SidebarCard({ children, className }: { children: React.ReactNode; class
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border border-border bg-surface px-2 py-1.5">
-      <div className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
       <div className="font-mono-tabular text-sm font-bold text-foreground">{value}</div>
     </div>
   );
@@ -25,10 +27,14 @@ function CountStat({
   value: string;
   tone: "primary" | "success" | "destructive";
 }) {
-  const c = { primary: "text-primary", success: "text-success", destructive: "text-destructive" }[tone];
+  const c = { primary: "text-primary", success: "text-success", destructive: "text-destructive" }[
+    tone
+  ];
   return (
     <div className="border border-border bg-surface px-2 py-1.5 text-center">
-      <div className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
       <div className={cn("font-mono-tabular text-xl font-bold", c)}>{value}</div>
     </div>
   );
@@ -102,7 +108,10 @@ export function DashboardStatsPanel() {
                 />
                 <span className="font-mono-tabular text-muted-foreground">{item.time}</span>
                 <span
-                  className={cn("font-bold uppercase", item.pass ? "text-success" : "text-destructive")}
+                  className={cn(
+                    "font-bold uppercase",
+                    item.pass ? "text-success" : "text-destructive",
+                  )}
                 >
                   {item.pass ? "Pass" : "Fail"}
                 </span>

@@ -8,12 +8,7 @@ type Props = ProfilePageProps & {
   defaultSelectedId?: string;
 };
 
-export function TrainedModelsPanel({
-  profile,
-  readOnly,
-  onUpdate,
-  defaultSelectedId,
-}: Props) {
+export function TrainedModelsPanel({ profile, readOnly, onUpdate, defaultSelectedId }: Props) {
   const models = useTrainedModels(profile, onUpdate, defaultSelectedId);
 
   if (!models.selected) {

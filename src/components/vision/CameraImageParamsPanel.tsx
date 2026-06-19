@@ -25,7 +25,11 @@ export function CameraImageParamsPanel({
           />
         </Field>
         <Field label="Gain" hint="Min: 0 – Max: 24.0">
-          <Select value={draft.gain} onChange={(e) => onSet("gain", e.target.value)} disabled={readOnly}>
+          <Select
+            value={draft.gain}
+            onChange={(e) => onSet("gain", e.target.value)}
+            disabled={readOnly}
+          >
             <option>Mono8</option>
             <option>4.0</option>
             <option>8.0</option>

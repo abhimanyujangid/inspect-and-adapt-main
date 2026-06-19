@@ -68,10 +68,7 @@ export function ProfileManagementTable({
             inactive: "bg-muted-foreground",
           }[p.status];
           return (
-            <tr
-              key={p.id}
-              className={cn("border-b border-border/50", isActive && "bg-primary/5")}
-            >
+            <tr key={p.id} className={cn("border-b border-border/50", isActive && "bg-primary/5")}>
               <td className="py-2.5">
                 <div className="flex items-center gap-2">
                   {isActive && <Check className="h-3 w-3 text-primary" />}

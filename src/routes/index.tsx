@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { StartupSplash } from "@/components/vision/StartupSplash";
 import { VisionApp } from "@/components/vision/VisionApp";
+
+const SPLASH_MS = 2000;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,5 +26,13 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setReady(true), SPLASH_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!ready) return <StartupSplash />;
   return <VisionApp />;
 }

@@ -3,13 +3,7 @@ import type { Dataset, Model } from "@/lib/vision-storage";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui";
 
-export function ModelOverviewRow({
-  model,
-  datasets,
-}: {
-  model: Model;
-  datasets: Dataset[];
-}) {
+export function ModelOverviewRow({ model, datasets }: { model: Model; datasets: Dataset[] }) {
   const ds = datasets.find((d) => d.id === model.datasetId);
   return (
     <div

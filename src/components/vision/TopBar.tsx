@@ -25,10 +25,12 @@ export function TopBar({
 }: Props) {
   return (
     <header className="relative z-30 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-[#e0e2e8] px-3">
-      <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary text-[10px] font-black text-primary-foreground">
-          BV
-        </div>
+      <div className="flex items-center ">
+        <img
+          src="/logo.png"
+          alt="BaiTech Vision"
+          className="size-20 shrink-0 rounded-sm object-contain"
+        />
         <div className="flex flex-col leading-none">
           <span className="text-[11px] font-bold uppercase tracking-wider text-foreground">
             BaiTech Vision

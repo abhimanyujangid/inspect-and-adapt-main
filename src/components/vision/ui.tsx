@@ -14,8 +14,14 @@ import { cn } from "@/lib/utils";
  */
 
 export function PageHeader({
-  title, subtitle, actions,
-}: { title: string; subtitle?: string; actions?: React.ReactNode }) {
+  title,
+  subtitle,
+  actions,
+}: {
+  title: string;
+  subtitle?: string;
+  actions?: React.ReactNode;
+}) {
   return (
     <div className="shrink-0 flex items-end justify-between border-b-2 border-primary bg-surface px-5 py-3">
       <div>
@@ -28,8 +34,16 @@ export function PageHeader({
 }
 
 export function Panel({
-  title, action, children, className,
-}: { title?: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
+  title,
+  action,
+  children,
+  className,
+}: {
+  title?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <section className={cn("panel flex flex-col overflow-hidden", className)}>
       {title && (
@@ -45,8 +59,16 @@ export function Panel({
   );
 }
 
-export function Stat({ label, value, hint, tone = "default" }: {
-  label: string; value: string; hint?: string; tone?: "default" | "success" | "warning" | "destructive" | "primary";
+export function Stat({
+  label,
+  value,
+  hint,
+  tone = "default",
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  tone?: "default" | "success" | "warning" | "destructive" | "primary";
 }) {
   const c = {
     default: "text-foreground",
@@ -57,17 +79,29 @@ export function Stat({ label, value, hint, tone = "default" }: {
   }[tone];
   return (
     <div className="panel p-3">
-      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
       <div className={cn("mt-1 font-mono-tabular text-2xl font-bold", c)}>{value}</div>
       {hint && <div className="mt-0.5 text-[11px] text-muted-foreground">{hint}</div>}
     </div>
   );
 }
 
-export function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
+export function Field({
+  label,
+  children,
+  hint,
+}: {
+  label: string;
+  children: React.ReactNode;
+  hint?: string;
+}) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
       {children}
       {hint && <span className="text-[10px] text-muted-foreground">{hint}</span>}
     </label>
@@ -103,8 +137,12 @@ export function Select({ children, ...rest }: React.SelectHTMLAttributes<HTMLSel
 }
 
 export function Btn({
-  variant = "primary", className, ...rest
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "ghost" | "outline" | "danger" | "success" }) {
+  variant = "primary",
+  className,
+  ...rest
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "primary" | "ghost" | "outline" | "danger" | "success";
+}) {
   const v = {
     primary: "bg-primary text-primary-foreground hover:brightness-110",
     success: "bg-success text-success-foreground hover:brightness-110",
@@ -118,13 +156,20 @@ export function Btn({
       className={cn(
         "inline-flex h-8 items-center justify-center gap-1.5 rounded-sm px-3 text-[11px] font-bold uppercase tracking-wider",
         "disabled:opacity-40 disabled:cursor-not-allowed",
-        v, className,
+        v,
+        className,
       )}
     />
   );
 }
 
-export function Badge({ tone = "default", children }: { tone?: "default" | "success" | "warning" | "destructive" | "primary"; children: React.ReactNode }) {
+export function Badge({
+  tone = "default",
+  children,
+}: {
+  tone?: "default" | "success" | "warning" | "destructive" | "primary";
+  children: React.ReactNode;
+}) {
   const c = {
     default: "bg-surface-2 text-muted-foreground border-border",
     success: "bg-success/20 text-success border-success/40",
@@ -133,7 +178,12 @@ export function Badge({ tone = "default", children }: { tone?: "default" | "succ
     primary: "bg-primary/20 text-primary border-primary/40",
   }[tone];
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider", c)}>
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider",
+        c,
+      )}
+    >
       {children}
     </span>
   );

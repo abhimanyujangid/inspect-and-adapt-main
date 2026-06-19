@@ -22,13 +22,13 @@ pub fn run() {
 ```
 
 ```js
-import { invoke } from '@tauri-apps/api/core';
-invoke('my_custom_command');
+import { invoke } from "@tauri-apps/api/core";
+invoke("my_custom_command");
 ```
 
 Command names must be unique across the whole app, even across modules. Commands defined directly in
 `lib.rs` **cannot** be marked `pub` — the macro's generated glue code collides if you do. (If they're
-in a separate module, see below, they *should* be `pub`.)
+in a separate module, see below, they _should_ be `pub`.)
 
 ## Defining commands in a separate module
 
@@ -68,7 +68,7 @@ fn my_custom_command(invoke_message: String) {
 ```
 
 ```js
-invoke('my_custom_command', { invokeMessage: 'Hello!' });
+invoke("my_custom_command", { invokeMessage: "Hello!" });
 ```
 
 JS args are camelCase by default even when the Rust param is snake_case — Tauri converts
@@ -78,8 +78,9 @@ automatically. To force the JS side to also use snake_case:
 #[tauri::command(rename_all = "snake_case")]
 fn my_custom_command(invoke_message: String) {}
 ```
+
 ```js
-invoke('my_custom_command', { invoke_message: 'Hello!' });
+invoke("my_custom_command", { invoke_message: "Hello!" });
 ```
 
 Any argument type implementing `serde::Deserialize` works.
@@ -92,8 +93,9 @@ fn my_custom_command() -> String {
     "Hello from Rust!".into()
 }
 ```
+
 ```js
-invoke('my_custom_command').then((message) => console.log(message));
+invoke("my_custom_command").then((message) => console.log(message));
 ```
 
 Any type implementing `serde::Serialize` works. For large binary payloads (files, HTTP responses),
@@ -123,8 +125,9 @@ fn login(user: String, password: String) -> Result<String, String> {
     }
 }
 ```
+
 ```js
-invoke('login', { user: 'tauri', password: '...' })
+invoke("login", { user: "tauri", password: "..." })
   .then((message) => console.log(message))
   .catch((error) => console.error(error));
 ```
@@ -272,21 +275,24 @@ Events are the simpler, less type-safe counterpart to commands: always async, no
 payloads only, but easy for fire-and-forget notifications in either direction.
 
 **Emit from frontend:**
+
 ```js
-import { emit } from '@tauri-apps/api/event';
-emit('file-selected', '/path/to/file');
+import { emit } from "@tauri-apps/api/event";
+emit("file-selected", "/path/to/file");
 ```
 
 **Listen on frontend:**
+
 ```js
-import { listen } from '@tauri-apps/api/event';
-const unlisten = await listen('download-started', (event) => {
+import { listen } from "@tauri-apps/api/event";
+const unlisten = await listen("download-started", (event) => {
   console.log(event.payload);
 });
 // later: unlisten();
 ```
 
 **Listen on Rust side:**
+
 ```rust
 use tauri::Listener;
 
