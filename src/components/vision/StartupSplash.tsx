@@ -4,9 +4,9 @@ export function StartupSplash() {
       <img
         src="/logo.png"
         alt="BaiTech Vision"
-        className="h-36 w-36 object-contain sm:h-44 sm:w-44"
+        className="size-30 shrink-0 rounded-sm object-contain sm:size-90"
       />
-      <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.2em] text-foreground">
+      <p className="mt-1 text-xl font-bold uppercase tracking-[0.2em] text-foreground">
         BaiTech Vision
       </p>
       <p className="mt-1 text-[9px] uppercase tracking-wider text-muted-foreground">

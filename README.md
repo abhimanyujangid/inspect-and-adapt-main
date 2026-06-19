@@ -83,6 +83,41 @@ src-tauri/target/release/bundle/dmg/VisionOps_0.1.0_aarch64.dmg
 
 > **Note:** Stop any running `npm run dev` before `npm run build` or `npm run tauri:build` — the build step uses port 3000 for SPA prerendering.
 
+## Linux build (GitHub Actions)
+
+Pushes to `main` automatically build Linux installers on GitHub-hosted Ubuntu runners. You do **not** need a Linux PC.
+
+Workflow: [`.github/workflows/build-linux.yml`](.github/workflows/build-linux.yml)
+
+| Trigger | When it runs |
+| ------- | ------------ |
+| Push to `main` | Every merge/push |
+| **Actions → Build Linux → Run workflow** | Manual build |
+
+**Concurrency:** if a new push lands on `main` while a build is still running, GitHub **cancels the old run** and starts the new one (no queue of stale builds).
+
+### Download Linux artifacts
+
+1. Open your repo on GitHub → **Actions**
+2. Click the latest **Build Linux** run
+3. Under **Artifacts**, download:
+   - `visionops-linux-appimage` — portable `.AppImage` (run on most Linux distros)
+   - `visionops-linux-deb` — `.deb` installer for Debian/Ubuntu
+   - `visionops-linux-bundle-dir` — full bundle folder
+
+Run the AppImage:
+
+```bash
+chmod +x VisionOps_*.AppImage
+./VisionOps_*.AppImage
+```
+
+Install the deb:
+
+```bash
+sudo dpkg -i visionops_*.deb
+```
+
 ## Other scripts
 
 | Command           | Description                                     |

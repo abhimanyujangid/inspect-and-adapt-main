@@ -1,0 +1,87 @@
+name: Build Linux
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Cancel an in-progress run when a newer commit is pushed to the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-linux:
+    name: Tauri Linux bundle
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app (Linux)
+        run: npm run tauri:build
+
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: visionops-linux-appimage
+          path: src-tauri/target/release/bundle/appimage/*.AppImage
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload deb package
+        uses: actions/upload-artifact@v4
+        with:
+          name: visionops-linux-deb
+          path: src-tauri/target/release/bundle/deb/*.deb
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload bundle metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: visionops-linux-bundle-dir
+          path: src-tauri/target/release/bundle/
+          if-no-files-found: error
+          retention-days: 14
