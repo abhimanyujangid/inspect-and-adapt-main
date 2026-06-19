@@ -171,6 +171,7 @@ export function emptyVisionStorage(): VisionStorage {
 }
 
 export function loadVisionStorage(): VisionStorage {
+  if (typeof window === "undefined") return emptyVisionStorage();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return emptyVisionStorage();
@@ -213,6 +214,7 @@ export function finishProfile(profiles: Profile[], profileId: string): Profile[]
 }
 
 export function mockCaptureDataUrl(label: string): string {
+  if (typeof document === "undefined") return "";
   const canvas = document.createElement("canvas");
   canvas.width = 320;
   canvas.height = 240;
