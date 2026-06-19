@@ -1,0 +1,68 @@
+---
+description: Scalable component-based architecture — ~100 lines per file, reusable components, consistent naming
+globs: src/components/**/*.{tsx,ts}
+alwaysApply: false
+---
+
+# Component Architecture
+
+## File size (~100 lines)
+
+- Target **≤100 lines** per file (excluding imports/exports). Hard max **150** before splitting.
+- If a file grows, extract:
+  - repeated UI → `components/vision/ui.tsx` or a new `*Panel.tsx` / `*Section.tsx`
+  - local state + handlers → `use*.ts` hook in the same feature folder
+  - types/constants → `src/lib/vision-*.ts`
+
+```tsx
+// ❌ BAD — 300-line page with inline table, filters, and modals
+export function DashboardPage() { /* everything in one file */ }
+
+// ✅ GOOD — page composes smaller pieces
+export function DashboardPage() {
+  return (
+    <>
+      <PageHeader title="Dashboard" />
+      <DashboardStats stats={stats} />
+      <InspectionTable rows={rows} onReset={onReset} />
+    </>
+  );
+}
+```
+
+## Component-based layout
+
+- **Pages** (`pages/*Page.tsx`) — compose layout + wire props; no business logic duplication.
+- **Feature components** — one responsibility (modal, drawer, panel, wizard step).
+- **Primitives** — shared UI in `ui.tsx` (`Btn`, `Panel`, `Field`, `Badge`). Do not duplicate these styles inline.
+
+```
+src/components/vision/
+├── VisionApp.tsx          # shell / routing state only
+├── TopBar.tsx, Sidebar.tsx
+├── *Modal.tsx, *Drawer.tsx, *Panel.tsx, *Wizard.tsx
+├── pages/*Page.tsx
+└── ui.tsx                 # reusable primitives
+```
+
+## Reuse before rewrite
+
+- Check `ui.tsx` and existing `*Panel.tsx` / `*Modal.tsx` before adding new markup.
+- Pass data via typed props; share types from `@/lib/vision-storage` or colocated `types.ts`.
+- Extract the second copy of the same UI into a shared component.
+
+## File naming (PascalCase + suffix)
+
+| Kind | Pattern | Example |
+|------|---------|---------|
+| App shell | `{Name}App.tsx` | `VisionApp.tsx` |
+| Page | `{Name}Page.tsx` in `pages/` | `DashboardPage.tsx` |
+| Modal | `{Name}Modal.tsx` | `ConfirmModal.tsx` |
+| Drawer | `{Name}Drawer.tsx` | `ManageProfilesDrawer.tsx` |
+| Panel / section | `{Name}Panel.tsx` | `TrainedModelsPanel.tsx` |
+| Wizard | `{Name}Wizard.tsx` | `NewProfileWizard.tsx` |
+| Layout chrome | descriptive noun | `TopBar.tsx`, `Sidebar.tsx` |
+| Hook | `use{Name}.ts` | `useProfileForm.ts` |
+
+- One default export component per file; name must match filename.
+- Use `@/` path aliases for cross-folder imports.

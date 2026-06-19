@@ -1,188 +1,85 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { TopBar } from "./TopBar";
-import { Sidebar, type PageKey } from "./Sidebar";
-import { DashboardPage } from "./pages/DashboardPage";
-import { AlarmPage } from "./pages/AlarmPage";
-import { ProfileOverviewPage } from "./pages/ProfileOverviewPage";
-import { NewProfileWizard } from "./NewProfileWizard";
-import { ManageProfilesDrawer } from "./ManageProfilesDrawer";
-import { RolePasswordModal } from "./RolePasswordModal";
 import type { UserRole } from "@/lib/vision-constants";
-import {
-  activateProfile,
-  finishProfile,
-  loadVisionStorage,
-  saveVisionStorage,
-  type Profile,
-  type VisionStorage,
-} from "@/lib/vision-storage";
-
-type WizardMode = "create" | "edit" | null;
+import { ManageProfilesDrawer } from "./ManageProfilesDrawer";
+import { NewProfileWizard } from "./NewProfileWizard";
+import { RolePasswordModal } from "./RolePasswordModal";
+import { Sidebar } from "./Sidebar";
+import { TopBar } from "./TopBar";
+import { useVisionAppActions } from "./useVisionAppActions";
+import { useVisionStorage } from "./useVisionStorage";
+import { AlarmPage } from "./pages/AlarmPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { ProfileOverviewPage } from "./pages/ProfileOverviewPage";
 
 export function VisionApp() {
-  const [storage, setStorage] = useState<VisionStorage>(() => loadVisionStorage());
-  const [page, setPage] = useState<PageKey>("dashboard");
-  const [wizardOpen, setWizardOpen] = useState(false);
-  const [wizardMode, setWizardMode] = useState<WizardMode>(null);
-  const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
-  const [manageOpen, setManageOpen] = useState(false);
+  const { storage, persist } = useVisionStorage();
   const [role, setRole] = useState<UserRole>("Admin");
-  const [pendingRole, setPendingRole] = useState<UserRole | null>(null);
-  const [lineRunning, setLineRunning] = useState(true);
-  const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const { profiles, activeProfileId } = storage;
-  const activeProfile = profiles.find((p) => p.id === activeProfileId) ?? null;
-  const editingProfile = profiles.find((p) => p.id === editingProfileId) ?? null;
-
-  const persist = useCallback((next: VisionStorage) => {
-    setStorage(next);
-    if (persistTimer.current) clearTimeout(persistTimer.current);
-    persistTimer.current = setTimeout(() => saveVisionStorage(next), 300);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (persistTimer.current) clearTimeout(persistTimer.current);
-    };
-  }, []);
-
-  const updateProfile = useCallback(
-    (updated: Profile) => {
-      persist({
-        ...storage,
-        profiles: storage.profiles.map((p) => (p.id === updated.id ? updated : p)),
-      });
-    },
-    [storage, persist],
-  );
-
-  const requestRoleChange = (next: UserRole) => {
-    if (next === role) return;
-    setPendingRole(next);
-  };
-
-  const confirmRoleChange = () => {
-    if (pendingRole) setRole(pendingRole);
-    setPendingRole(null);
-  };
-
-  const openCreateWizard = () => {
-    if (role !== "Admin") return;
-    setWizardMode("create");
-    setEditingProfileId(null);
-    setWizardOpen(true);
-  };
-
-  const openManageProfiles = () => {
-    if (role !== "Admin") return;
-    setManageOpen(true);
-  };
-
-  const openEditWizard = (profileId: string) => {
-    setWizardMode("edit");
-    setEditingProfileId(profileId);
-    setWizardOpen(true);
-    setManageOpen(false);
-  };
-
-  const closeWizard = () => {
-    setWizardOpen(false);
-    setWizardMode(null);
-    setEditingProfileId(null);
-  };
-
-  const handleActivate = (profileId: string) => {
-    persist({
-      ...storage,
-      profiles: activateProfile(storage.profiles, profileId),
-      activeProfileId: profileId,
-    });
-  };
-
-  const handleDelete = (profileId: string) => {
-    const remaining = storage.profiles.filter((p) => p.id !== profileId);
-    let nextActiveId = storage.activeProfileId;
-    let nextProfiles = remaining;
-
-    if (profileId === storage.activeProfileId) {
-      const fallback = remaining[0];
-      nextActiveId = fallback?.id ?? "";
-      nextProfiles = remaining.map((p, i) =>
-        i === 0 && fallback ? { ...p, status: "active" as const } : { ...p, status: p.status === "active" ? "inactive" as const : p.status },
-      );
-    }
-
-    persist({ profiles: nextProfiles, activeProfileId: nextActiveId });
-  };
-
-  const handleFinish = (profileId: string) => {
-    persist({
-      profiles: finishProfile(storage.profiles, profileId),
-      activeProfileId: profileId,
-    });
-    closeWizard();
-  };
+  const actions = useVisionAppActions(storage, persist, role);
 
   const renderPage = () => {
-    switch (page) {
+    switch (actions.page) {
       case "dashboard":
-        return <DashboardPage profile={activeProfile} />;
+        return <DashboardPage profile={actions.activeProfile} />;
       case "alarm":
         return <AlarmPage />;
       case "profile":
-        return <ProfileOverviewPage profile={activeProfile} />;
+        return <ProfileOverviewPage profile={actions.activeProfile} />;
     }
   };
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background text-foreground">
       <TopBar
-        activeProfile={activeProfile}
-        onNewProfile={openCreateWizard}
-        onManageProfiles={openManageProfiles}
+        activeProfile={actions.activeProfile}
+        onNewProfile={actions.openCreateWizard}
+        onManageProfiles={actions.openManageProfiles}
         role={role}
-        onRequestRoleChange={requestRoleChange}
-        lineRunning={lineRunning}
-        onToggleLine={() => setLineRunning((r) => !r)}
+        onRequestRoleChange={actions.requestRoleChange}
+        lineRunning={actions.lineRunning}
+        onToggleLine={() => actions.setLineRunning((r) => !r)}
       />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar current={page} onNavigate={setPage} />
-        <main className={cn("flex-1 min-h-0", page === "dashboard" ? "overflow-hidden" : "overflow-auto")}>
+        <Sidebar current={actions.page} onNavigate={actions.setPage} />
+        <main
+          className={cn(
+            "min-h-0 flex-1",
+            actions.page === "dashboard" ? "overflow-hidden" : "overflow-auto",
+          )}
+        >
           {renderPage()}
         </main>
       </div>
 
-      {wizardOpen && (
+      {actions.wizardOpen && (
         <NewProfileWizard
-          mode={wizardMode ?? "create"}
-          editingProfile={editingProfile}
-          onClose={closeWizard}
+          mode={actions.wizardMode ?? "create"}
+          editingProfile={actions.editingProfile}
+          onClose={actions.closeWizard}
           onPersist={persist}
           storage={storage}
-          onSetEditingId={setEditingProfileId}
-          onFinish={handleFinish}
+          onSetEditingId={actions.setEditingProfileId}
+          onFinish={actions.handleFinish}
         />
       )}
 
       <ManageProfilesDrawer
-        open={manageOpen}
-        onClose={() => setManageOpen(false)}
-        profiles={profiles}
-        activeProfileId={activeProfileId}
-        onActivate={handleActivate}
-        onEdit={openEditWizard}
-        onDelete={handleDelete}
+        open={actions.manageOpen}
+        onClose={() => actions.setManageOpen(false)}
+        profiles={actions.profiles}
+        activeProfileId={actions.activeProfileId}
+        onActivate={actions.handleActivate}
+        onEdit={actions.openEditWizard}
+        onDelete={actions.handleDelete}
         readOnly={role === "Operator"}
       />
 
-      {pendingRole && (
+      {actions.pendingRole && (
         <RolePasswordModal
-          open={pendingRole !== null}
-          targetRole={pendingRole}
-          onSuccess={confirmRoleChange}
-          onCancel={() => setPendingRole(null)}
+          open={actions.pendingRole !== null}
+          targetRole={actions.pendingRole}
+          onSuccess={() => actions.confirmRoleChange(setRole)}
+          onCancel={() => actions.setPendingRole(null)}
         />
       )}
     </div>
